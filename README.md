@@ -1,2 +1,2 @@
 # Turkey_EQ_practice
-hello world
+hello ff
