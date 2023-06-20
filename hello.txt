@@ -1,2 +1,6 @@
+<<<<<<< Updated upstream
 hello world!!!!
 sometimes
+=======
+my name Ekaterina Kugot!
+>>>>>>> Stashed changes
