@@ -90,8 +90,8 @@ def create_dir(data: fileIn, db: Session = Depends(get_db)):
 
 @api.post("/file/upload-file")
 def upload_file(file: UploadFile):
-    f = open(file.filename, 'w')
-    f.write(str(file.file.read()))
+    f = open(file.filename, 'wb')
+    f.write(file.file.read())
     f.close()
     return {'file': 'uploaded'}
 
