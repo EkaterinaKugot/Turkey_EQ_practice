@@ -88,15 +88,11 @@ def create_dir(data: fileIn, db: Session = Depends(get_db)):
 
 #newtext
 
-@api.post("/file/upload-bytes")
-def upload_file_bytes(file_bytes: bytes = File()):
-  return {'file_bytes': str(file_bytes)}
-
-
 @api.post("/file/upload-file")
 def upload_file(file: UploadFile):
-    #for i in file:
-     #   print(i)
-    return file
+    f = open(file.filename, 'w')
+    f.write(str(file.file.read()))
+    f.close()
+    return {'file': 'uploaded'}
 
 
