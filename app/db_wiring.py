@@ -3,10 +3,10 @@ from fastapi import FastAPI, Depends, HTTPException
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker, Session, relationship
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./app/db/users.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./app/db/eq_monitor.db"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
@@ -42,6 +42,14 @@ class UserDB(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+    files = relationship("FileDB", back_populates="user")
+
+class FileDB(Base):
+    __tablename__ = "files"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    path = Column(String, nullable=False)
+    user = relationship("UserDB", back_populates="files")
     
 Base.metadata.create_all(bind=engine)
 
