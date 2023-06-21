@@ -1,5 +1,6 @@
 from pydantic import EmailStr, BaseModel
 from fastapi import FastAPI, Depends, HTTPException
+import os
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -35,6 +36,10 @@ class UserOut(BaseModel):
 
 class UserIn(UserOut):
     password: str
+
+class FileOut(BaseModel):
+    user_id: int
+    path: str
 
 #Model DB
 class UserDB(Base):
@@ -82,7 +87,11 @@ def create_user(user: UserIn, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    return create_user_db(db=db, user=user)
+    db_user = create_user_db(db=db, user=user)
+    directory = f"./app/users/user{db_user.id}"
+    if not os.path.exists(directory):
+        os.mkdir(directory)
+    return db_user
 
 @api.put("/users/", response_model=UserOut)
 def update_user_email(new_email: EmailStr, user: UserIn, db: Session = Depends(get_db)):
@@ -104,3 +113,7 @@ def delete_user(user: UserIn, db: Session = Depends(get_db)):
     else:
         delete_user_db(db, user)
         return None
+    
+@api.post("/files/", response_model=FileOut)
+def download_file(user: UserIn, db: Session = Depends(get_db)):
+    pass
