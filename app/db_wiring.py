@@ -1,5 +1,5 @@
 from pydantic import EmailStr, BaseModel
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, UploadFile
 import os
 
 from sqlalchemy import create_engine
@@ -33,9 +33,9 @@ class UserOut(BaseModel):
     class Config:
         orm_mode = True
 
-
 class UserIn(UserOut):
     password: str
+
 
 class FileOut(BaseModel):
     user_id: int
@@ -81,6 +81,18 @@ def delete_user_db(db: Session, user: UserIn):
     db.delete(db_user)
     db.commit()
 
+def upload_file_db(db: Session, file: FileOut):
+    db_file = FileDB(user_id=file.user_id, path=file.path)
+    db.add(db_file)
+    db.commit()
+    db.refresh(db_file)
+    return db_file
+
+def get_all_files_db(db: Session, user: UserIn):
+    db_user = get_user_by_email(db, user.email)
+    return db.query(FileDB).filter(FileDB.user_id == db_user.id).all()
+
+
 #Endpoints
 @api.post("/users/", response_model=UserOut)
 def create_user(user: UserIn, db: Session = Depends(get_db)):
@@ -114,6 +126,36 @@ def delete_user(user: UserIn, db: Session = Depends(get_db)):
         delete_user_db(db, user)
         return None
     
-@api.post("/files/", response_model=FileOut)
-def download_file(user: UserIn, db: Session = Depends(get_db)):
-    pass
+@api.post("/files/")
+def upload_file(emailIn: EmailStr, passwordIn: str, up_file: UploadFile, dirname: str,  db: Session = Depends(get_db)):
+    user = UserIn(email=emailIn, password=passwordIn)
+    db_user = get_user_by_email(db, email=user.email)
+    if db_user is None:
+        db_user = create_user(user, db)
+    elif (user.password + "notreallyhashed" != db_user.hashed_password):
+        raise HTTPException(status_code=400, detail="The password was entered incorrectly")
+
+    directory = f"./app/users/user{db_user.id}/{dirname}"
+    if not os.path.exists(directory):
+        os.mkdir(directory)
+
+    #сохраняем файл
+    f = open(directory+f"/{up_file.filename}", 'wb')
+    f.write(up_file.file.read())
+    f.close()
+
+    fileOut = FileOut(user_id=db_user.id,path=directory+f"/{up_file.filename}")
+    return upload_file_db(db, fileOut)
+
+@api.get("/files/")
+def get_all_files(emailIn: EmailStr, passwordIn: str, db: Session = Depends(get_db)):
+    user = UserIn(email=emailIn, password=passwordIn)
+    db_user = get_user_by_email(db, user.email)
+    if db_user is None:
+        raise HTTPException(status_code=400, detail="This email does not exist")
+    elif (user.password + "notreallyhashed" != db_user.hashed_password):
+        raise HTTPException(status_code=400, detail="The password was entered incorrectly")
+    else:
+        return get_all_files_db(db, user)
+
+
