@@ -18,14 +18,10 @@ async def index(user_name: str | None = None):
 async def create_user(user_name: str, user_mail: EmailStr):
     return {'user_name': user_name, 'user_mail': user_mail}
 
-class UserBase(BaseModel):
-    name: str
+class UserOut(BaseModel):
     email: EmailStr
 
-class UserOut(UserBase):
-    pass
-
-class UserIn(UserBase):
+class UserIn(UserOut):
     password: str
 
 @api.post("/create_user_from_model", response_model=UserOut)
