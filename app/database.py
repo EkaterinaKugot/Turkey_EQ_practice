@@ -1,5 +1,6 @@
 from pydantic import EmailStr, BaseModel
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi import UploadFile, File
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -27,7 +28,6 @@ def get_db():
 #Schema FastAPI
 class UserOut(BaseModel):
     email: EmailStr
-    
     class Config:
         orm_mode = True
 
@@ -49,7 +49,7 @@ class UserDB(Base):
 class FilesDB(Base):
     __tablename__ = "files"
     id = Column(Integer, primary_key=True, index=True)
-    user_email = Column(String)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     file = Column(String)
     
 Base.metadata.create_all(bind=engine)
@@ -64,8 +64,8 @@ def create_user_db(db: Session, user: UserIn):
     return db_user
 
 def create_file_db(db: Session, data: fileIn):
-    email = data.email
-    db_file = FilesDB(user_email=data.email, file=data.file_name)
+    user_id = 1
+    db_file = FilesDB(user_id=user_id, file=data.file_name)
     db.add(db_file)
     db.commit()
     db.refresh(db_file)
@@ -85,5 +85,18 @@ def create_user(user: UserIn, db: Session = Depends(get_db)):
 @api.post("/files/")
 def create_dir(data: fileIn, db: Session = Depends(get_db)):
     return create_file_db(db=db, data=data)
+
+#newtext
+
+@api.post("/file/upload-bytes")
+def upload_file_bytes(file_bytes: bytes = File()):
+  return {'file_bytes': str(file_bytes)}
+
+
+@api.post("/file/upload-file")
+def upload_file(file: UploadFile):
+    #for i in file:
+     #   print(i)
+    return file
 
 
