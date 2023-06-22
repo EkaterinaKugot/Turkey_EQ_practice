@@ -1,11 +1,13 @@
 from pydantic import EmailStr, BaseModel
 from fastapi import FastAPI, Depends, HTTPException, UploadFile
 import os
+from datetime import datetime
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import and_, or_, func
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./app/db/eq_monitor.db"
 
@@ -40,9 +42,9 @@ class UserIn(UserOut):
 class FileOut(BaseModel):
     user_id: int
     path: str
-    start_date: str
-    end_date: str
-    upload_date: str
+    start_date: datetime
+    end_date: datetime
+    upload_date: datetime
 
 
 #Model DB
@@ -58,9 +60,9 @@ class FileDB(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     path = Column(String, nullable=False)
-    start_date = Column(DateTime, nullable=False)
-    end_date = Column(DateTime, nullable=False)
-    upload_date = Column(DateTime, nullable=False)
+    start_date = Column(String, nullable=False)
+    end_date = Column(String, nullable=False)
+    upload_date = Column(String, nullable=False)
     user = relationship("UserDB", back_populates="files")
     
 Base.metadata.create_all(bind=engine)
@@ -89,16 +91,22 @@ def delete_user_db(db: Session, user: UserIn):
     db.commit()
 
 def upload_file_db(db: Session, file: FileOut):
-    db_file = FileDB(user_id=file.user_id, path=file.path)
+    db_file = FileDB(user_id=file.user_id, path=file.path,
+                      start_date=file.start_date, end_date=file.end_date,
+                      upload_date=file.upload_date)
     db.add(db_file)
     db.commit()
     db.refresh(db_file)
     return db_file
 
-def get_all_files_db(db: Session, user: UserIn):
+def get_by_date_db(db: Session, user: UserIn, date: str):
     db_user = get_user_by_email(db, user.email)
-    return db.query(FileDB).filter(FileDB.user_id == db_user.id).all()
+    return db.query(FileDB).filter(and_(FileDB.user_id == db_user.id,
+                                         or_(FileDB.start_date == date, FileDB.end_date == date))).all()
 
+def get_last_files_db(db: Session, user: UserIn):
+    db_user = get_user_by_email(db, user.email)
+    return db.query(FileDB).filter(and_(FileDB.user_id == db_user.id, )).all()
 
 #Endpoints
 @api.post("/users/", response_model=UserOut)
@@ -133,8 +141,10 @@ def delete_user(user: UserIn, db: Session = Depends(get_db)):
         delete_user_db(db, user)
         return None
     
+#Работа с файлами    
 @api.post("/files/")
-def upload_file(emailIn: EmailStr, passwordIn: str, up_file: UploadFile, dirname: str,  db: Session = Depends(get_db)):
+def upload_file(emailIn: EmailStr, passwordIn: str, startDate: datetime, endDate: datetime,
+                 up_file: UploadFile, db: Session = Depends(get_db)):
     user = UserIn(email=emailIn, password=passwordIn)
     db_user = get_user_by_email(db, email=user.email)
     if db_user is None:
@@ -142,20 +152,20 @@ def upload_file(emailIn: EmailStr, passwordIn: str, up_file: UploadFile, dirname
     elif (user.password + "notreallyhashed" != db_user.hashed_password):
         raise HTTPException(status_code=400, detail="The password was entered incorrectly")
 
-    directory = f"./app/users/user{db_user.id}/{dirname}"
-    if not os.path.exists(directory):
-        os.mkdir(directory)
-
     #сохраняем файл
+    directory = f"./app/users/user{db_user.id}"
     f = open(directory+f"/{up_file.filename}", 'wb')
     f.write(up_file.file.read())
     f.close()
 
-    fileOut = FileOut(user_id=db_user.id,path=directory+f"/{up_file.filename}")
+    now_date = datetime.now()
+    fileOut = FileOut(user_id=db_user.id,path=directory+f"/{up_file.filename}", start_date=startDate,
+                      end_date=endDate, upload_date=now_date)
+    
     return upload_file_db(db, fileOut)
 
-@api.get("/files/")
-def get_all_files(emailIn: EmailStr, passwordIn: str, db: Session = Depends(get_db)):
+@api.get("/files/last")
+def get_last_files(emailIn: EmailStr, passwordIn: str, db: Session = Depends(get_db)):
     user = UserIn(email=emailIn, password=passwordIn)
     db_user = get_user_by_email(db, user.email)
     if db_user is None:
@@ -163,6 +173,20 @@ def get_all_files(emailIn: EmailStr, passwordIn: str, db: Session = Depends(get_
     elif (user.password + "notreallyhashed" != db_user.hashed_password):
         raise HTTPException(status_code=400, detail="The password was entered incorrectly")
     else:
-        return get_all_files_db(db, user)
+        return get_last_files_db(db, user)
+    
+@api.get("/files/")
+def get_by_date(emailIn: EmailStr, passwordIn: str, date: datetime, db: Session = Depends(get_db)):
+    user = UserIn(email=emailIn, password=passwordIn)
+    db_user = get_user_by_email(db, user.email)
+    if db_user is None:
+        raise HTTPException(status_code=400, detail="This email does not exist")
+    elif (user.password + "notreallyhashed" != db_user.hashed_password):
+        raise HTTPException(status_code=400, detail="The password was entered incorrectly")
+    else:
+        date = str(date)
+        return get_by_date_db(db, user, date)
+    
 
 
+#uvicorn app.db_wiring:api --reload --port 8083
