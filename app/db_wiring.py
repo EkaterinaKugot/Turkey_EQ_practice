@@ -11,6 +11,7 @@ from sqlalchemy.orm import sessionmaker, Session, relationship
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy import and_, or_, func
 
+
 SQLALCHEMY_DATABASE_URL = "sqlite:///./app/db/eq_monitor.db"
 
 engine = create_engine(
@@ -50,6 +51,7 @@ class FileOut(BaseModel):
     start_date: datetime
     end_date: datetime
     upload_date: datetime
+
 
 
 # Model DB
