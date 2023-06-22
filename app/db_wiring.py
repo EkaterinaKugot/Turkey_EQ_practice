@@ -1,7 +1,8 @@
 from pydantic import EmailStr, BaseModel
 from fastapi import FastAPI, Depends, HTTPException, UploadFile
 import os
-from datetime import datetime
+import shutil
+from datetime import datetime, date 
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -67,6 +68,13 @@ class FileDB(Base):
     
 Base.metadata.create_all(bind=engine)
 
+def input_data_error(db_user: UserDB, user: UserIn):
+    if db_user is None:
+        raise HTTPException(status_code=400, detail="This email does not exist")
+    elif (user.password + "notreallyhashed" != db_user.hashed_password):
+        raise HTTPException(status_code=400, detail="The password was entered incorrectly")
+    
+
 #CRUD
 def create_user_db(db: Session, user: UserIn):
     fake_hashed_password = user.password + "notreallyhashed"
@@ -87,8 +95,13 @@ def update_user_email_db(db: Session, email: str, new_email: str):
     
 def delete_user_db(db: Session, user: UserIn):
     db_user = get_user_by_email(db, user.email)
+    user_data = db.query(FileDB).filter(FileDB.user_id == db_user.id).all()
+    for data in user_data:
+        db.delete(data)
+    shutil.rmtree(f"./app/users/user{db_user.id}")
     db.delete(db_user)
     db.commit()
+    return None
 
 def upload_file_db(db: Session, file: FileOut):
     db_file = FileDB(user_id=file.user_id, path=file.path,
@@ -99,14 +112,24 @@ def upload_file_db(db: Session, file: FileOut):
     db.refresh(db_file)
     return db_file
 
-def get_by_date_db(db: Session, user: UserIn, date: str):
+def get_by_date_db(db: Session, user: UserIn, date: date):
     db_user = get_user_by_email(db, user.email)
     return db.query(FileDB).filter(and_(FileDB.user_id == db_user.id,
-                                         or_(FileDB.start_date == date, FileDB.end_date == date))).all()
+                                         or_(func.DATE(FileDB.start_date) == date, func.DATE(FileDB.end_date) == date))).all()
 
 def get_last_files_db(db: Session, user: UserIn):
     db_user = get_user_by_email(db, user.email)
-    return db.query(FileDB).filter(and_(FileDB.user_id == db_user.id, )).all()
+    last_date = db.query(FileDB).filter(FileDB.user_id == db_user.id).order_by(FileDB.id.desc()).first().upload_date
+    return db.query(FileDB).filter(and_(FileDB.user_id == db_user.id, FileDB.upload_date == last_date)).all()
+
+def delete_file_db(db: Session, user: UserIn, date: date):
+    db_user = get_user_by_email(db, user.email)
+    user_data = db.query(FileDB).filter(and_(FileDB.user_id == db_user.id,
+                                         or_(func.DATE(FileDB.start_date) == date, func.DATE(FileDB.end_date) == date))).first()
+    os.remove(user_data.path) 
+    db.delete(user_data)
+    db.commit()
+    return None
 
 #Endpoints
 @api.post("/users/", response_model=UserOut)
@@ -123,23 +146,14 @@ def create_user(user: UserIn, db: Session = Depends(get_db)):
 @api.put("/users/", response_model=UserOut)
 def update_user_email(new_email: EmailStr, user: UserIn, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, email=user.email)
-    if db_user is None:
-        raise HTTPException(status_code=400, detail="This email does not exist")
-    elif (user.password + "notreallyhashed" != db_user.hashed_password):
-        raise HTTPException(status_code=400, detail="The password was entered incorrectly")
-    else:
-        return update_user_email_db(db, user.email, new_email)
+    input_data_error(db_user, user)
+    return update_user_email_db(db, user.email, new_email)
     
 @api.delete("/users/")
 def delete_user(user: UserIn, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, user.email)
-    if db_user is None:
-        raise HTTPException(status_code=400, detail="This email does not exist")
-    elif (user.password + "notreallyhashed" != db_user.hashed_password):
-        raise HTTPException(status_code=400, detail="The password was entered incorrectly")
-    else:
-        delete_user_db(db, user)
-        return None
+    input_data_error(db_user, user)
+    return delete_user_db(db, user)
     
 #Работа с файлами    
 @api.post("/files/")
@@ -168,25 +182,20 @@ def upload_file(emailIn: EmailStr, passwordIn: str, startDate: datetime, endDate
 def get_last_files(emailIn: EmailStr, passwordIn: str, db: Session = Depends(get_db)):
     user = UserIn(email=emailIn, password=passwordIn)
     db_user = get_user_by_email(db, user.email)
-    if db_user is None:
-        raise HTTPException(status_code=400, detail="This email does not exist")
-    elif (user.password + "notreallyhashed" != db_user.hashed_password):
-        raise HTTPException(status_code=400, detail="The password was entered incorrectly")
-    else:
-        return get_last_files_db(db, user)
+    input_data_error(db_user, user)
+    return get_last_files_db(db, user)
     
 @api.get("/files/")
-def get_by_date(emailIn: EmailStr, passwordIn: str, date: datetime, db: Session = Depends(get_db)):
+def get_by_date(emailIn: EmailStr, passwordIn: str, date: date, db: Session = Depends(get_db)):
     user = UserIn(email=emailIn, password=passwordIn)
     db_user = get_user_by_email(db, user.email)
-    if db_user is None:
-        raise HTTPException(status_code=400, detail="This email does not exist")
-    elif (user.password + "notreallyhashed" != db_user.hashed_password):
-        raise HTTPException(status_code=400, detail="The password was entered incorrectly")
-    else:
-        date = str(date)
-        return get_by_date_db(db, user, date)
+    input_data_error(db_user, user)
+    return get_by_date_db(db, user, date)
     
-
+@api.delete("/files/")
+def delete_file(user: UserIn, date: date, db: Session = Depends(get_db)):
+    db_user = get_user_by_email(db, user.email)
+    input_data_error(db_user, user)
+    return delete_file_db(db, user, date)
 
 #uvicorn app.db_wiring:api --reload --port 8083
