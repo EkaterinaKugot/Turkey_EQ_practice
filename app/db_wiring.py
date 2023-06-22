@@ -204,25 +204,13 @@ def upload_files(up_file: UploadFile):
         for i in range(len(uploaded_files)):
             uploaded_files[i] = uploaded_files[i].split('/')[-1]
         if len(dirs) != 0:
-            uploaded_files = []
             for file in os.listdir(directory + f"/{dirs[0]}"):
+
                 # Если такой файл существует, то старый файл удалится и заменится новым
                 if os.path.exists(os.path.join(directory, file)):
                     os.remove(os.path.join(directory, file))
                     shutil.move(directory + f"/{dirs[0]}{file}", directory)
 
-                # Если такой файл уже существует, то новый добавится
-                # с цифрой означающей номер копии
-                # number_of_copies = 1
-                # original_name = file
-                # while os.path.exists(os.path.join(directory, file)):
-                #   number_of_copies += 1
-                #  file = f"{'.'.join(original_name.split('.')[:-1])}_{number_of_copies}.{original_name.split('.')[-1]}"
-                # if number_of_copies > 1:
-                #   os.rename(directory + f"/{dirs[0]}{original_name}", directory + f"/{file}")
-                # else:
-                #   shutil.move(directory + f"/{dirs[0]}{file}", directory)
-                uploaded_files.append(file)
             os.rmdir(os.path.join(directory, dirs[0]))
         os.remove(os.path.join(directory, file_name))
     else:
