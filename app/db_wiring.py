@@ -5,7 +5,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./app/db/eq_monitor.db"
 
@@ -40,6 +40,10 @@ class UserIn(UserOut):
 class FileOut(BaseModel):
     user_id: int
     path: str
+    start_date: str
+    end_date: str
+    upload_date: str
+
 
 #Model DB
 class UserDB(Base):
@@ -54,6 +58,9 @@ class FileDB(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     path = Column(String, nullable=False)
+    start_date = Column(DateTime, nullable=False)
+    end_date = Column(DateTime, nullable=False)
+    upload_date = Column(DateTime, nullable=False)
     user = relationship("UserDB", back_populates="files")
     
 Base.metadata.create_all(bind=engine)
