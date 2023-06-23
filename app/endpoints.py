@@ -1,7 +1,7 @@
 from pydantic import EmailStr
 from fastapi import FastAPI, Depends, HTTPException, UploadFile
 from datetime import datetime, date
-from sqlalchemy.orm import  Session
+from sqlalchemy.orm import Session
 import os
 import shutil
 import zipfile
@@ -10,8 +10,7 @@ from .database.crud import *
 from .database.schemas import *
 from .database.models import *
 
-
-user_dir = "./app/users/user"
+user_dir
 
 api = FastAPI()
 
@@ -24,7 +23,7 @@ def input_data_error(db_user: UserDB, user: UserIn):
         )
     
 def upload_files_archives(db_user: UserDB, up_file: UploadFile):
-    directory = user_dir + str(db_user.id)
+    directory = user_dir.user_dir + str(db_user.id)
 
     # сохранение файлов
     file_name = up_file.filename
@@ -59,7 +58,7 @@ def create_user(user: UserIn, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     db_user = create_user_db(db=db, user=user)
-    directory = user_dir + str(db_user.id)
+    directory = user_dir.user_dir + str(db_user.id)
     if not os.path.exists(directory):
         os.mkdir(directory)
     return db_user
@@ -97,7 +96,7 @@ def upload_file(
             status_code=400, detail="The password was entered incorrectly"
         )
 
-    directory = user_dir + str(db_user.id)
+    directory = user_dir.user_dir + str(db_user.id)
     uploaded_files = upload_files_archives(db_user, up_file)
 
     now_date = datetime.now()
