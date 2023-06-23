@@ -7,7 +7,10 @@ import shutil
 import os
 
 
-user_dir = "./app/users/user"
+class User_dir():
+    user_dir = "./app/users/user"
+
+user_dir = User_dir()
 
 
 # CRUD
@@ -36,7 +39,7 @@ def delete_user_db(db: Session, user: UserIn):
     user_data = db.query(FileDB).filter(FileDB.user_id == db_user.id).all()
     for data in user_data:
         db.delete(data)
-    shutil.rmtree(user_dir + str(db_user.id))
+    shutil.rmtree(user_dir.user_dir + str(db_user.id))
     db.delete(db_user)
     db.commit()
     return None
