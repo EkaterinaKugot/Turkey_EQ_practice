@@ -16,6 +16,7 @@ uvicorn = {extras = ["standart"], version = "^0.22.0"}
 sqlalchemy = "^2.0.16"
 python-multipart = "^0.0.6"
 datetime = {extras = ["standart"], version = "^5.1"}
+loguru = "^0.7.0"
 
 
 [build-system]
