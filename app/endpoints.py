@@ -6,13 +6,12 @@ import os
 import shutil
 import zipfile
 
-from .crud import *
-from .schemas import *
-from .models import *
+from .database.crud import *
+from .database.schemas import *
+from .database.models import *
 
 
 user_dir = "./app/users/user"
-# uvicorn app.endpoints:api --reload --port 8083
 
 api = FastAPI()
 
