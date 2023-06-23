@@ -10,7 +10,6 @@ from .database.crud import *
 from .database.schemas import *
 from .database.models import *
 
-user_dir
 
 api = FastAPI()
 
@@ -21,7 +20,7 @@ def input_data_error(db_user: UserDB, user: UserIn):
         raise HTTPException(
             status_code=400, detail="The password was entered incorrectly"
         )
-    
+
 def upload_files_archives(db_user: UserDB, up_file: UploadFile):
     directory = user_dir.user_dir + str(db_user.id)
 
@@ -136,4 +135,3 @@ def delete_file(user: UserIn, date: date, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, user.email)
     input_data_error(db_user, user)
     return delete_file_db(db, user, date)
-
