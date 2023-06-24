@@ -1,7 +1,7 @@
 from pydantic import EmailStr
 from fastapi import FastAPI, Depends, HTTPException, UploadFile
 from datetime import datetime, date
-from sqlalchemy.orm import  Session
+from sqlalchemy.orm import Session
 import os
 import shutil
 import zipfile
@@ -10,8 +10,6 @@ from .database.crud import *
 from .database.schemas import *
 from .database.models import *
 
-
-user_dir = "./app/users/user"
 
 api = FastAPI()
 #uvicorn app.endpoints:api --reload --port 8083
@@ -23,9 +21,9 @@ def input_data_error(db_user: UserDB, user: UserIn):
         raise HTTPException(
             status_code=400, detail="The password was entered incorrectly"
         )
-    
+
 def upload_files_archives(db_user: UserDB, up_file: UploadFile):
-    directory = user_dir + str(db_user.id)
+    directory = user_dir.user_dir + str(db_user.id)
 
     # сохранение файлов
     file_name = up_file.filename
@@ -60,7 +58,7 @@ def create_user(user: UserIn, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     db_user = create_user_db(db=db, user=user)
-    directory = user_dir + str(db_user.id)
+    directory = user_dir.user_dir + str(db_user.id)
     if not os.path.exists(directory):
         os.mkdir(directory)
     return db_user
@@ -98,7 +96,7 @@ def upload_file(
             status_code=400, detail="The password was entered incorrectly"
         )
 
-    directory = user_dir + str(db_user.id)
+    directory = user_dir.user_dir + str(db_user.id)
     uploaded_files = upload_files_archives(db_user, up_file)
 
     for path in uploaded_files:
@@ -141,4 +139,3 @@ def delete_file(user: UserIn, date: date, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, user.email)
     input_data_error(db_user, user)
     return delete_file_db(db, user, date)
-
