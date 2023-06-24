@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from ..endpoints import *
+from ..main import *
 
 user_dir.user_dir = "./app/tests/users/user"
 
