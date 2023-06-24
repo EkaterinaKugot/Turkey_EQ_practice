@@ -10,6 +10,9 @@ import os
 
 from ..endpoints import *
 
+if not os.path.exists(os.path.join("./app/tests/users")):
+    os.mkdir('./app/tests/users')
+
 user_dir.user_dir = "./app/tests/users/user"
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./app/tests/test_db.db"
@@ -105,6 +108,8 @@ def test_delete_file():
     user = {"email": "test_user@example.com", "password": 'qwer'}
     responce = client.request("DELETE", "/files/?date=2023-06-22", json=user)
     assert responce.status_code == 200
+    assert not os.path.exists(os.path.join("./app/tests/users/user1/", "file1.txt"))
+    assert not os.path.exists(os.path.join("./app/tests/users/user1/", "file2.txt"))
 
 
 def test_delete_user():
