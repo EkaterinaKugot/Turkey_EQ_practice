@@ -7,6 +7,7 @@
     <list default="true" id="1c7c0c3c-0e5f-46a4-8d47-2f72521b33b9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.coverage" beforeDir="false" afterPath="$PROJECT_DIR$/.coverage" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/tests/test_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/tests/test_client.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/tests/test_db.db" beforeDir="false" afterPath="$PROJECT_DIR$/app/tests/test_db.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

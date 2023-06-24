@@ -1,4 +1,3 @@
-from pydantic import EmailStr
 from fastapi import FastAPI, Depends
 from fastapi.testclient import TestClient
 
@@ -6,9 +5,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from ..main import *
 import os
 
-from ..endpoints import *
 
 if not os.path.exists(os.path.join("./app/tests/users")):
     os.mkdir('./app/tests/users')
