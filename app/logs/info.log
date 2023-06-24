@@ -1,0 +1,9 @@
+2023-06-24T19:04:44.331047+0800 INFO 3 The user has been successfully created
+2023-06-24T19:04:44.335013+0800 INFO 3 The user's directory has been created
+2023-06-24T19:05:16.894865+0800 INFO 0 This email does not exist
+2023-06-24T19:05:37.210317+0800 INFO 3 The password was entered incorrectly
+2023-06-24T19:06:40.559241+0800 INFO 3 The file has been uploaded successfully
+2023-06-24T19:06:40.570257+0800 INFO 3 The archive has been successfully unzipped
+2023-06-24T19:06:40.593275+0800 INFO 3 File data has been successfully added to the database
+2023-06-24T19:06:40.608239+0800 INFO 3 File data has been successfully added to the database
+2023-06-24T19:12:49.065389+0800 INFO 3 The user and his files have been successfully deleted
