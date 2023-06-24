@@ -154,8 +154,8 @@ def delete_file(user: UserIn, date: date, db: Session = Depends(get_db)):
     return delete_file_db(db, user, date)
 
 
-def main():
-    uvicorn.run(f"{os.path.basename(__file__)[:-3]}:api", log_level="info")
+#def main():
+ #   uvicorn.run(f"{os.path.basename(__file__)[:-3]}:api", log_level="info")
 
-if __name__ == '__main__':
-    main()
+#if __name__ == '__main__':
+ #   main()

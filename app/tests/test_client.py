@@ -1,4 +1,3 @@
-from pydantic import EmailStr
 from fastapi import FastAPI, Depends
 from fastapi.testclient import TestClient
 
