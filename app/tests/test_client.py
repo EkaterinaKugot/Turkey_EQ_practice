@@ -6,6 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
+import os
+
 from ..endpoints import *
 
 user_dir.user_dir = "./app/tests/users/user"
@@ -61,23 +63,41 @@ def test_update_user_email():
 
 
 def test_upload_file():
-    URL = "/files/?emailIn=test_user%40example.com&passwordIn=qwer&startDate=2023-06-22%2019%3A40%3A46.486583&endDate=" \
-          "2023-06-22%2019%3A40%3A46.486583"
+    URL = "/files/?emailIn=test_user%40example.com&passwordIn=asdf&startDate=2023-03-22%2019%3A40%3A46.486583&endDate=" \
+          "2023-08-22%2019%3A40%3A46.486583"
+    file = {"up_file": ("file.txt", open("./app/tests/test files/file.txt", "rb"), "text/plain")}
+    response = client.post(URL, files=file)
+    assert response.status_code == 400
+    assert response.json() == {"detail": "The password was entered incorrectly"}
+
+
+    URL = "/files/?emailIn=user%40example.com&passwordIn=qwer&startDate=2023-03-22%2019%3A40%3A46.486583&endDate=" \
+          "2023-08-22%2019%3A40%3A46.486583"
     file = {"up_file": ("file.txt", open("./app/tests/test files/file.txt", "rb"), "text/plain")}
     response = client.post(URL, files=file)
     assert response.status_code == 200
     assert response.json() == ['file.txt']
+    assert os.path.exists(os.path.join("./app/tests/users/user2/", "file.txt"))
 
+    URL = "/files/?emailIn=test_user%40example.com&passwordIn=qwer&startDate=2023-06-22%2019%3A40%3A46.486583&endDate=" \
+          "2023-06-22%2019%3A40%3A46.486583"
     for file_name in ["test files", "test files with folder"]:
         file = {"up_file": (f"{file_name}.zip", open(f"./app/tests/test files/{file_name}.zip", "rb"),
                             "application/zip")}
         response = client.post(URL, files=file)
         assert response.status_code == 200
         assert response.json() == ['file1.txt', 'file2.txt']
+        assert os.path.exists(os.path.join("./app/tests/users/user1/", "file1.txt"))
+        assert os.path.exists(os.path.join("./app/tests/users/user1/", "file2.txt"))
 
 
 def test_get_last_files():
     response = client.get("/files/last?emailIn=test_user%40example.com&passwordIn=qwer")
+    assert response.status_code == 200
+
+
+def test_get_by_date():
+    response = client.get("/files/?emailIn=test_user%40example.com&passwordIn=qwer&date=2023-06-22")
     assert response.status_code == 200
 
 
@@ -94,6 +114,10 @@ def test_delete_user():
     assert response.json() == {"detail": "The password was entered incorrectly"}
 
     user = {"email": "test_user@example.com", "password": 'qwer'}
+    response = client.request("DELETE", "/users/", json=user)
+    assert response.status_code == 200
+
+    user = {"email": "user@example.com", "password": 'qwer'}
     response = client.request("DELETE", "/users/", json=user)
     assert response.status_code == 200
 

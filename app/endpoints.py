@@ -98,6 +98,9 @@ def upload_file(
     directory = user_dir.user_dir + str(db_user.id)
     uploaded_files = upload_files_archives(db_user, up_file)
 
+    for path in uploaded_files:
+        delete_file_by_path(db, user, directory + f"/{path}")
+
     now_date = datetime.now()
     for file in uploaded_files:
         fileOut = FileOut(
