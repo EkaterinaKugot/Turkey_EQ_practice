@@ -109,3 +109,20 @@ def delete_file_db(db: Session, user: UserIn, date: date):
         db.delete(data)
     db.commit()
     return None
+
+def delete_file_by_path(db: Session, user: UserIn, path: str):
+    db_user = get_user_by_email(db, email=user.email)
+    user_data = (
+        db.query(FileDB)
+        .filter(
+            and_(
+                FileDB.user_id == db_user.id,
+                FileDB.path == path
+            )
+        )
+        .first()
+    )
+    if not(user_data is None):
+        db.delete(user_data)
+        db.commit()
+    return None

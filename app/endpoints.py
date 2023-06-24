@@ -14,6 +14,7 @@ from .database.models import *
 user_dir = "./app/users/user"
 
 api = FastAPI()
+#uvicorn app.endpoints:api --reload --port 8083
 
 def input_data_error(db_user: UserDB, user: UserIn):
     if db_user is None:
@@ -34,18 +35,18 @@ def upload_files_archives(db_user: UserDB, up_file: UploadFile):
 
     if file_name.split(".")[-1] == "zip":
         with zipfile.ZipFile(directory + f"/{file_name}", "r") as zip_ref:
-            uploaded_files = [x for x in zip_ref.namelist() if not x.endswith("/")]
+            uploaded_files = [x for x in zip_ref.namelist() if not x.endswith("/")]           
             dirs = [x for x in zip_ref.namelist() if x.endswith("/")]
             zip_ref.extractall(directory)
         for i in range(len(uploaded_files)):
-            uploaded_files[i] = uploaded_files[i].split("/")[-1]
-        if len(dirs) != 0:
+            uploaded_files[i] = uploaded_files[i].split("/")[-1]       
+        if len(dirs) != 0:        
             for file in os.listdir(directory + f"/{dirs[0]}"):
-                # Если такой файл существует, то старый файл удалится и заменится новым
-                if os.path.exists(os.path.join(directory, file)):
+                # Если такой файл существует, то старый файл удалится и заменится новым              
+                if os.path.exists(directory + f"/{file}"):
                     os.remove(os.path.join(directory, file))
                 shutil.move(directory + f"/{dirs[0]}/{file}", directory)
-
+            
             os.rmdir(os.path.join(directory, dirs[0]))
         os.remove(os.path.join(directory, file_name))
     else:
@@ -99,6 +100,9 @@ def upload_file(
 
     directory = user_dir + str(db_user.id)
     uploaded_files = upload_files_archives(db_user, up_file)
+
+    for path in uploaded_files:
+        delete_file_by_path(db, user, directory + f"/{path}")
 
     now_date = datetime.now()
     for file in uploaded_files:
