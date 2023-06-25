@@ -1,38 +1,5 @@
-2023-06-24T19:04:44.331047+0800 INFO 3 The user has been successfully created
-2023-06-24T19:04:44.335013+0800 INFO 3 The user's directory has been created
-2023-06-24T19:05:16.894865+0800 INFO 0 This email does not exist
-2023-06-24T19:05:37.210317+0800 INFO 3 The password was entered incorrectly
-2023-06-24T19:06:40.559241+0800 INFO 3 The file has been uploaded successfully
-2023-06-24T19:06:40.570257+0800 INFO 3 The archive has been successfully unzipped
-2023-06-24T19:06:40.593275+0800 INFO 3 File data has been successfully added to the database
-2023-06-24T19:06:40.608239+0800 INFO 3 File data has been successfully added to the database
-2023-06-24T19:12:49.065389+0800 INFO 3 The user and his files have been successfully deleted
-2023-06-24T19:36:19.843190+0800 INFO 1 The user has been successfully created
-2023-06-24T19:36:19.844192+0800 INFO 1 The user's directory has been created
-2023-06-24T19:36:19.853279+0800 INFO 0 Email already registered
-2023-06-24T19:36:19.864313+0800 INFO 1 The password was entered incorrectly
-2023-06-24T19:36:19.881406+0800 INFO 1 The user has successfully updated the email
-2023-06-24T19:36:19.892434+0800 INFO 0 This email does not exist
-2023-06-24T19:36:19.906501+0800 INFO 1 The password was entered incorrectly
-2023-06-24T19:36:19.922579+0800 INFO 2 The user has been successfully created
-2023-06-24T19:36:19.922579+0800 INFO 2 The user's directory has been created
-2023-06-24T19:36:19.923557+0800 INFO 2 The file has been uploaded successfully
-2023-06-24T19:36:19.933634+0800 INFO 2 File data has been successfully added to the database
-2023-06-24T19:36:19.952601+0800 INFO 1 The file has been uploaded successfully
-2023-06-24T19:36:19.955639+0800 INFO 1 The archive has been successfully unzipped
-2023-06-24T19:36:19.963601+0800 INFO 1 File data has been successfully added to the database
-2023-06-24T19:36:19.968602+0800 INFO 1 File data has been successfully added to the database
-2023-06-24T19:36:19.985603+0800 INFO 1 The file has been uploaded successfully
-2023-06-24T19:36:19.993602+0800 INFO 1 The archive has been successfully unzipped
-2023-06-24T19:36:20.000604+0800 INFO 1 Duplicate file data has been successfully deleted
-2023-06-24T19:36:20.007589+0800 INFO 1 Duplicate file data has been successfully deleted
-2023-06-24T19:36:20.012603+0800 INFO 1 File data has been successfully added to the database
-2023-06-24T19:36:20.017604+0800 INFO 1 File data has been successfully added to the database
-2023-06-24T19:36:20.031627+0800 INFO 1 File data on the last upload date was successfully received
-2023-06-24T19:36:20.049657+0800 INFO 1 File data by date successfully received
-2023-06-24T19:36:20.061628+0800 INFO 1 File data by date successfully received
-2023-06-24T19:36:20.068629+0800 INFO 1 Files successfully deleted
-2023-06-24T19:36:20.080658+0800 INFO 1 The password was entered incorrectly
-2023-06-24T19:36:20.096628+0800 INFO 1 The user and his files have been successfully deleted
-2023-06-24T19:36:20.113630+0800 INFO 2 The user and his files have been successfully deleted
-2023-06-24T19:36:20.121658+0800 INFO 0 This email does not exist
+2023-06-25 20:20:57.378 | INFO     | app.database.crud:create_user_db:29 - 3 The user has been successfully created
+2023-06-25 20:20:57.384 | INFO     | app.main:create_user:76 - 3 The user's directory has been created
+2023-06-25 20:21:00.242 | INFO     | app.main:create_user:70 - Email already registered
+2023-06-25 20:21:36.085 | INFO     | app.database.crud:delete_user_db:60 - 3 The user and his files have been successfully deleted
+2023-06-25 20:21:38.182 | INFO     | app.main:input_data_error:25 - This email does not exist
