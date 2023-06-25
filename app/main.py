@@ -14,17 +14,16 @@ from .database.models import *
 
 
 api = FastAPI()
-#uvicorn app.endpoints:api --reload --port 8083
+#uvicorn app.main:api --reload --port 8083
 
-logger.add("./app/logs/info.log", level="INFO", format="{time} {level} {extra[id]} {message}", retention="1 week")
-context_logger = logger.bind(id="0")
+logger.add("./app/logs/info.log", level="INFO", retention="1 week")
 
 def input_data_error(db_user: UserDB, user: UserIn):
     if db_user is None:
-        context_logger.info("This email does not exist")
+        logger.info("This email does not exist")
         raise HTTPException(status_code=400, detail="This email does not exist")
     elif user.password + "notreallyhashed" != db_user.hashed_password:
-        context_logger.bind(id=str(db_user.id)).info("The password was entered incorrectly")
+        logger.info(f"{db_user.id} The password was entered incorrectly")
         raise HTTPException(
             status_code=400, detail="The password was entered incorrectly"
         )
@@ -38,7 +37,7 @@ def upload_files_archives(db_user: UserDB, up_file: UploadFile):
     f.write(up_file.file.read())
     f.close()
 
-    context_logger.bind(id=str(db_user.id)).info("The file has been uploaded successfully")
+    logger.info(f"{db_user.id} The file has been uploaded successfully")
 
     if file_name.split(".")[-1] == "zip":
         with zipfile.ZipFile(directory + f"/{file_name}", "r") as zip_ref:
@@ -56,7 +55,7 @@ def upload_files_archives(db_user: UserDB, up_file: UploadFile):
             
             os.rmdir(os.path.join(directory, dirs[0]))
         os.remove(os.path.join(directory, file_name))
-        context_logger.bind(id=str(db_user.id)).info("The archive has been successfully unzipped")
+        logger.info(f"{db_user.id} The archive has been successfully unzipped")
     else:
         uploaded_files = [file_name]
     return uploaded_files
@@ -66,13 +65,13 @@ def upload_files_archives(db_user: UserDB, up_file: UploadFile):
 def create_user(user: UserIn, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, email=user.email)
     if db_user:
-        context_logger.info("Email already registered")
+        logger.info("Email already registered")
         raise HTTPException(status_code=400, detail="Email already registered")
     db_user = create_user_db(db=db, user=user)
     directory = user_dir.user_dir + str(db_user.id)
     if not os.path.exists(directory):     
         os.mkdir(directory)
-        context_logger.bind(id=str(db_user.id)).info("The user's directory has been created")
+        logger.info(f"{db_user.id} The user's directory has been created")
     return db_user
 
 
@@ -104,7 +103,7 @@ def upload_file(
     if db_user is None:
         db_user = create_user(user, db)
     elif user.password + "notreallyhashed" != db_user.hashed_password:
-        context_logger.bind(id=str(db_user.id)).info("The password was entered incorrectly")
+        logger.info(f"{db_user.id} The password was entered incorrectly")
         raise HTTPException(
             status_code=400, detail="The password was entered incorrectly"
         )
