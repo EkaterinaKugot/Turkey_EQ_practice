@@ -19,3 +19,7 @@ class FileOut(BaseModel):
     start_date: datetime
     end_date: datetime
     upload_date: datetime
+    type: str
+    epc_date: datetime
+    epc_lat: float
+    epc_lon: float

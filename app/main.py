@@ -95,6 +95,10 @@ def upload_file(
     passwordIn: str,
     startDate: datetime,
     endDate: datetime,
+    type: str,
+    epc_date: datetime,
+    epc_lat: float,
+    epc_lon: float,
     up_file: UploadFile,
     db: Session = Depends(get_db),
 ):
@@ -122,6 +126,10 @@ def upload_file(
             start_date=startDate,
             end_date=endDate,
             upload_date=now_date,
+            type=type,
+            epc_date=epc_date,
+            epc_lat=epc_lat,
+            epc_lon=epc_lon
         )
         upload_file_db(db, fileOut)
 
