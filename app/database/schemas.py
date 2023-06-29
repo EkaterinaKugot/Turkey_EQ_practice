@@ -23,3 +23,9 @@ class FileOut(BaseModel):
     epc_date: datetime
     epc_lat: float
     epc_lon: float
+
+class MapIn(BaseModel):
+    files: list[str]
+    date: list[datetime]
+    lat: list[int]
+    lon: list[int]
