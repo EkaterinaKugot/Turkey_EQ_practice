@@ -3,3 +3,63 @@
 2023-06-25 20:21:00.242 | INFO     | app.main:create_user:70 - Email already registered
 2023-06-25 20:21:36.085 | INFO     | app.database.crud:delete_user_db:60 - 3 The user and his files have been successfully deleted
 2023-06-25 20:21:38.182 | INFO     | app.main:input_data_error:25 - This email does not exist
+2023-06-29 14:38:41.176 | INFO     | app.main:input_data_error:23 - This email does not exist
+2023-06-29 14:38:49.427 | INFO     | app.main:input_data_error:26 - 2 The password was entered incorrectly
+2023-06-29 15:11:29.828 | INFO     | app.database.crud:create_user_db:28 - 1 The user has been successfully created
+2023-06-29 15:11:29.828 | INFO     | app.main:create_user:74 - 1 The user's directory has been created
+2023-06-29 15:11:29.843 | INFO     | app.main:create_user:68 - Email already registered
+2023-06-29 15:11:29.859 | INFO     | app.main:input_data_error:26 - 1 The password was entered incorrectly
+2023-06-29 15:11:29.875 | INFO     | app.database.crud:update_user_email_db:44 - 1 The user has successfully updated the email
+2023-06-29 15:11:29.890 | INFO     | app.main:input_data_error:23 - This email does not exist
+2023-06-29 15:11:29.906 | INFO     | app.main:upload_file:106 - 1 The password was entered incorrectly
+2023-06-29 15:11:29.922 | INFO     | app.database.crud:create_user_db:28 - 2 The user has been successfully created
+2023-06-29 15:11:29.922 | INFO     | app.main:create_user:74 - 2 The user's directory has been created
+2023-06-29 15:11:29.922 | INFO     | app.main:upload_files_archives:40 - 2 The file has been uploaded successfully
+2023-06-29 15:11:29.937 | INFO     | app.database.crud:upload_file_db:77 - 2 File data has been successfully added to the database
+2023-06-29 15:11:29.953 | INFO     | app.main:upload_files_archives:40 - 1 The file has been uploaded successfully
+2023-06-29 15:11:29.968 | INFO     | app.main:upload_files_archives:58 - 1 The archive has been successfully unzipped
+2023-06-29 15:11:29.968 | INFO     | app.database.crud:upload_file_db:77 - 1 File data has been successfully added to the database
+2023-06-29 15:11:29.984 | INFO     | app.database.crud:upload_file_db:77 - 1 File data has been successfully added to the database
+2023-06-29 15:11:30.000 | INFO     | app.main:upload_files_archives:40 - 1 The file has been uploaded successfully
+2023-06-29 15:11:30.015 | INFO     | app.main:upload_files_archives:58 - 1 The archive has been successfully unzipped
+2023-06-29 15:11:30.015 | INFO     | app.database.crud:delete_file_by_path:155 - 1 Duplicate file data has been successfully deleted
+2023-06-29 15:11:30.031 | INFO     | app.database.crud:delete_file_by_path:155 - 1 Duplicate file data has been successfully deleted
+2023-06-29 15:11:30.031 | INFO     | app.database.crud:upload_file_db:77 - 1 File data has been successfully added to the database
+2023-06-29 15:11:30.047 | INFO     | app.database.crud:upload_file_db:77 - 1 File data has been successfully added to the database
+2023-06-29 15:11:30.062 | INFO     | app.database.crud:get_last_files_db:123 - 1 File data on the last upload date was successfully received
+2023-06-29 15:11:30.078 | INFO     | app.database.crud:get_by_date_db:99 - 1 File data by date successfully received
+2023-06-29 15:11:30.093 | INFO     | app.database.crud:get_by_date_db:99 - 1 File data by date successfully received
+2023-06-29 15:11:30.109 | INFO     | app.database.crud:delete_file_db:134 - 1 Files successfully deleted
+2023-06-29 15:11:30.125 | INFO     | app.main:input_data_error:26 - 1 The password was entered incorrectly
+2023-06-29 15:11:30.156 | INFO     | app.database.crud:delete_user_db:59 - 1 The user and his files have been successfully deleted
+2023-06-29 15:11:30.172 | INFO     | app.database.crud:delete_user_db:59 - 2 The user and his files have been successfully deleted
+2023-06-29 15:11:30.187 | INFO     | app.main:input_data_error:23 - This email does not exist
+2023-06-29 15:22:32.151 | INFO     | app.database.crud:create_user_db:28 - 1 The user has been successfully created
+2023-06-29 15:22:32.151 | INFO     | app.main:create_user:74 - 1 The user's directory has been created
+2023-06-29 15:22:32.167 | INFO     | app.main:create_user:68 - Email already registered
+2023-06-29 15:22:32.183 | INFO     | app.main:input_data_error:26 - 1 The password was entered incorrectly
+2023-06-29 15:22:32.199 | INFO     | app.database.crud:update_user_email_db:44 - 1 The user has successfully updated the email
+2023-06-29 15:22:32.214 | INFO     | app.main:input_data_error:23 - This email does not exist
+2023-06-29 15:22:32.214 | INFO     | app.main:upload_file:106 - 1 The password was entered incorrectly
+2023-06-29 15:22:32.245 | INFO     | app.database.crud:create_user_db:28 - 2 The user has been successfully created
+2023-06-29 15:22:32.245 | INFO     | app.main:create_user:74 - 2 The user's directory has been created
+2023-06-29 15:22:32.245 | INFO     | app.main:upload_files_archives:40 - 2 The file has been uploaded successfully
+2023-06-29 15:22:32.261 | INFO     | app.database.crud:upload_file_db:77 - 2 File data has been successfully added to the database
+2023-06-29 15:22:32.277 | INFO     | app.main:upload_files_archives:40 - 1 The file has been uploaded successfully
+2023-06-29 15:22:32.293 | INFO     | app.main:upload_files_archives:58 - 1 The archive has been successfully unzipped
+2023-06-29 15:22:32.301 | INFO     | app.database.crud:upload_file_db:77 - 1 File data has been successfully added to the database
+2023-06-29 15:22:32.301 | INFO     | app.database.crud:upload_file_db:77 - 1 File data has been successfully added to the database
+2023-06-29 15:22:32.317 | INFO     | app.main:upload_files_archives:40 - 1 The file has been uploaded successfully
+2023-06-29 15:22:32.332 | INFO     | app.main:upload_files_archives:58 - 1 The archive has been successfully unzipped
+2023-06-29 15:22:32.348 | INFO     | app.database.crud:delete_file_by_path:155 - 1 Duplicate file data has been successfully deleted
+2023-06-29 15:22:32.348 | INFO     | app.database.crud:delete_file_by_path:155 - 1 Duplicate file data has been successfully deleted
+2023-06-29 15:22:32.364 | INFO     | app.database.crud:upload_file_db:77 - 1 File data has been successfully added to the database
+2023-06-29 15:22:32.379 | INFO     | app.database.crud:upload_file_db:77 - 1 File data has been successfully added to the database
+2023-06-29 15:22:32.395 | INFO     | app.database.crud:get_last_files_db:123 - 1 File data on the last upload date was successfully received
+2023-06-29 15:22:32.426 | INFO     | app.database.crud:get_by_date_db:99 - 1 File data by date successfully received
+2023-06-29 15:22:32.442 | INFO     | app.database.crud:get_by_date_db:99 - 1 File data by date successfully received
+2023-06-29 15:22:32.442 | INFO     | app.database.crud:delete_file_db:134 - 1 Files successfully deleted
+2023-06-29 15:22:32.457 | INFO     | app.main:input_data_error:26 - 1 The password was entered incorrectly
+2023-06-29 15:22:32.488 | INFO     | app.database.crud:delete_user_db:59 - 1 The user and his files have been successfully deleted
+2023-06-29 15:22:32.504 | INFO     | app.database.crud:delete_user_db:59 - 2 The user and his files have been successfully deleted
+2023-06-29 15:22:32.520 | INFO     | app.main:input_data_error:23 - This email does not exist
