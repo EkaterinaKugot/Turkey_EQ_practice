@@ -51,7 +51,7 @@ def upload_files_archives(db_user: UserDB, up_file: UploadFile):
             uploaded_files[i] = uploaded_files[i].split("/")[-1]
         if len(dirs) != 0:
             for file in os.listdir(directory + f"/{dirs[0]}"):
-                # Если такой файл существует, то старый файл удалится и заменится новым              
+                # Если такой файл существует, то старый файл удалится и заменится новым
                 if os.path.exists(directory + f"/{file}"):
                     os.remove(os.path.join(directory, file))
                 shutil.move(directory + f"/{dirs[0]}/{file}", directory)
@@ -96,12 +96,16 @@ def delete_user(user: UserIn, db: Session = Depends(get_db)):
 # Работа с файлами
 @api.post("/files/")
 def upload_file(
-        emailIn: EmailStr,
-        passwordIn: str,
-        startDate: datetime,
-        endDate: datetime,
-        up_file: UploadFile,
-        db: Session = Depends(get_db),
+    emailIn: EmailStr,
+    passwordIn: str,
+    startDate: datetime,
+    endDate: datetime,
+    type: str,
+    epc_date: datetime,
+    epc_lat: float,
+    epc_lon: float,
+    up_file: UploadFile,
+    db: Session = Depends(get_db),
 ):
     user = UserIn(email=emailIn, password=passwordIn)
     db_user = get_user_by_email(db, email=user.email)
@@ -127,6 +131,10 @@ def upload_file(
             start_date=startDate,
             end_date=endDate,
             upload_date=now_date,
+            type=type,
+            epc_date=epc_date,
+            epc_lat=epc_lat,
+            epc_lon=epc_lon
         )
         upload_file_db(db, fileOut)
 
