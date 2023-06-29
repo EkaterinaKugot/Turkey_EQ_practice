@@ -19,3 +19,9 @@ class FileOut(BaseModel):
     start_date: datetime
     end_date: datetime
     upload_date: datetime
+
+class MapIn(BaseModel):
+    files: list[str]
+    date: list[datetime]
+    lat: list[int]
+    lon: list[int]
