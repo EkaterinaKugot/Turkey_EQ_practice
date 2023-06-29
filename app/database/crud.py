@@ -67,6 +67,10 @@ def upload_file_db(db: Session, file: FileOut):
         start_date=file.start_date,
         end_date=file.end_date,
         upload_date=file.upload_date,
+        type=file.type,
+        epc_date=file.epc_date,
+        epc_lat=file.epc_lat,
+        epc_lon=file.epc_lon
     )
     try:
         db.add(db_file)
