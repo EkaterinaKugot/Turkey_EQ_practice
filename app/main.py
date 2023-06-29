@@ -63,6 +63,71 @@ def upload_files_archives(db_user: UserDB, up_file: UploadFile):
         uploaded_files = [file_name]
     return uploaded_files
 
+def data_for_drawing_maps(userId: int, mapFiles: MapIn, db: Session = Depends(get_db)):
+
+    FILES = {}
+    C_LIMITS = {}
+    EPICENTERS = {'lat': 0, 'lon': 0, 'time': datetime(2023, 2, 6, 10, 24, 50)}
+
+    for file in mapFiles.files:
+        file = get_data_about_file(db, file, userId)
+        if not file:
+            raise HTTPException(status_code=400, detail="The file you selected is missing")
+        if file.type in list(C_LIMITS.keys()):
+            raise HTTPException(status_code=400, detail="Selected files of the same type")
+        else:
+            if len(list(FILES.keys())) == 0:
+                EPICENTERS['lat'] = file.epc_lat
+                EPICENTERS['lon'] = file.epc_lon
+                EPICENTERS['time'] = file.epc_date
+            else:
+                if EPICENTERS['lat'] != file.epc_lat or EPICENTERS['lon'] != file.epc_lon or \
+                        EPICENTERS['time'] != file.epc_date:
+                    raise HTTPException(status_code=400,
+                                        detail="The selected files must have the same data about the Epicenter")
+            C_LIMITS[file.type] = []
+            if file.path not in list(FILES.keys()):
+                FILES[file.path] = file.type
+            else:
+                raise HTTPException(status_code=400, detail="The same files were selected")
+
+    if len(mapFiles.files) != len(mapFiles.c_limits) and len(mapFiles.c_limits) != 1:
+        raise HTTPException(status_code=400, detail="Incorrect number of elements in the color range")
+
+    mapFiles.lon = checking_ranges(mapFiles.lon)
+    mapFiles.lat = checking_ranges(mapFiles.lat)
+
+    for c_limit in range(len(mapFiles.c_limits)):
+        mapFiles.c_limits[c_limit] = checking_ranges(mapFiles.c_limits[c_limit])
+        for number in mapFiles.c_limits[c_limit]:
+            if number > 1 or number < -1:
+                raise HTTPException(status_code=400, detail="Invalid value for the color range")
+
+    if len(mapFiles.c_limits) == 1:
+        for key in list(C_LIMITS.keys()):
+            C_LIMITS[key] = mapFiles.c_limits[0] + ['TECu']
+    else:
+        keys = list(C_LIMITS.keys())
+        for c_limit in range(len(mapFiles.c_limits)):
+            C_LIMITS[keys[c_limit]] = mapFiles.c_limits[c_limit] + ['TECu']
+
+    return C_LIMITS, FILES, EPICENTERS
+
+
+def checking_ranges(rangers):
+    if len(rangers) != 2:
+        raise HTTPException(status_code=400, detail="The number of elements is not equal to two")
+
+    if rangers[0] == rangers[1]:
+        raise HTTPException(status_code=400, detail="the value is not a diagnosis")
+
+    if rangers[1] < rangers[0]:
+        range = rangers[1]
+        rangers[1] = rangers[0]
+        rangers[0] = range
+
+    return rangers
+
 
 # Endpoints
 @api.post("/users/", response_model=UserOut)
@@ -172,44 +237,14 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
     db_user = get_user_by_email(db, user.email)
     input_data_error(db_user, user)
 
-    if len(mapFiles.lon) != 2 or len(mapFiles.lat) != 2:
-        raise HTTPException(status_code=400, detail="The value of the latitude or longitude range is not equal to two")
+    if len(mapFiles.date) > 3 or len(mapFiles.date) < 1:
+        raise HTTPException(status_code=400, detail="The number of dates is incorrect")
 
-    if mapFiles.lon[1] == mapFiles.lon[0] or mapFiles.lat[1] == mapFiles.lat[0]:
-        raise HTTPException(status_code=400, detail="the value is not a diagnosis")
+    C_LIMITS, FILES, EPICENTERS = data_for_drawing_maps(db_user.id, mapFiles, db)
 
-    if mapFiles.lon[1] < mapFiles.lon[0]:
-        lon = mapFiles.lon[1]
-        mapFiles.lon[1] = mapFiles.lon[0]
-        mapFiles.lon[0] = lon
-
-    if mapFiles.lat[1] < mapFiles.lat[0]:
-        lat = mapFiles.lat[1]
-        mapFiles.lat[1] = mapFiles.lat[0]
-        mapFiles.lat[0] = lat
-
-
-
-    C_LIMITS = {
-        'ROTI': [-0.4, 0.4, 'TECu'],
-        '2-10 minute TEC variations': [-0.4, 0.4, 'TECu'],
-        '10-20 minute TEC variations': [-0.6, 0.6, 'TECu'],
-        '20-60 minute TEC variations': [-1, 1, 'TECu']
-    }
-
-    FILES_PRODUCT_10_24 = {}
-
-    for i in mapFiles.files:
-        FILES_PRODUCT_10_24[f"./app/users/user1/{i}"] = "10-20 minute TEC variations"
-
-    EPICENTERS = {'10:24': {'lat': 38.016,
-                            'lon': 37.206,
-                            'time': datetime(2023, 2, 6, 10, 24, 50)}
-                  }
-
-    plot_maps([FILES_PRODUCT_10_24],
-              FILES_PRODUCT_10_24,
-              EPICENTERS['10:24'],
+    plot_maps([FILES],
+              FILES,
+              EPICENTERS,
               clims=C_LIMITS,
               times=mapFiles.date,
               lat_limits=mapFiles.lat,
@@ -217,7 +252,7 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
               nrows=1,
               ncols=len(mapFiles.date))
 
-    return 'hello'
+    return None
 
 
 def main():

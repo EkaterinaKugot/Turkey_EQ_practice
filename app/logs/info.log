@@ -63,3 +63,13 @@
 2023-06-29 15:22:32.488 | INFO     | app.database.crud:delete_user_db:59 - 1 The user and his files have been successfully deleted
 2023-06-29 15:22:32.504 | INFO     | app.database.crud:delete_user_db:59 - 2 The user and his files have been successfully deleted
 2023-06-29 15:22:32.520 | INFO     | app.main:input_data_error:23 - This email does not exist
+2023-06-30 00:13:25.951 | INFO     | app.main:upload_files_archives:43 - 2 The file has been uploaded successfully
+2023-06-30 00:13:25.976 | INFO     | app.database.crud:upload_file_db:81 - 2 File data has been successfully added to the database
+2023-06-30 00:13:33.631 | INFO     | app.main:upload_files_archives:43 - 2 The file has been uploaded successfully
+2023-06-30 00:13:33.661 | INFO     | app.database.crud:delete_file_by_path:159 - 2 Duplicate file data has been successfully deleted
+2023-06-30 00:13:33.678 | INFO     | app.database.crud:upload_file_db:81 - 2 File data has been successfully added to the database
+2023-06-30 00:13:46.162 | INFO     | app.main:upload_files_archives:43 - 2 The file has been uploaded successfully
+2023-06-30 00:13:46.191 | INFO     | app.database.crud:delete_file_by_path:159 - 2 Duplicate file data has been successfully deleted
+2023-06-30 00:13:46.199 | INFO     | app.database.crud:upload_file_db:81 - 2 File data has been successfully added to the database
+2023-06-30 01:10:31.346 | INFO     | app.main:upload_files_archives:43 - 2 The file has been uploaded successfully
+2023-06-30 01:10:31.361 | INFO     | app.database.crud:upload_file_db:81 - 2 File data has been successfully added to the database

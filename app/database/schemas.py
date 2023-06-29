@@ -29,3 +29,4 @@ class MapIn(BaseModel):
     date: list[datetime]
     lat: list[int]
     lon: list[int]
+    c_limits: list[list[float]]
