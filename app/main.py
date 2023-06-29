@@ -152,6 +152,10 @@ def delete_file(user: UserIn, date: date, db: Session = Depends(get_db)):
     input_data_error(db_user, user)
     return delete_file_db(db, user, date)
 
+@api.get("/map/")
+def draw_map(emailIn: EmailStr, passwordIn: str, fileNames: list(str), dates: list(date), db: Session = Depends(get_db)):
+    pass
+
 
 def main():
     uvicorn.run(f"{os.path.basename(__file__)[:-3]}:api", log_level="info")
