@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, Float
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./app/database/eq_monitor.db"
 
@@ -37,6 +37,10 @@ class FileDB(Base):
     start_date = Column(String, nullable=False)
     end_date = Column(String, nullable=False)
     upload_date = Column(String, nullable=False)
+    type = Column(String, nullable=False)
+    epc_date = Column(String, nullable=False)
+    epc_lat = Column(Float, nullable=False)
+    epc_lon = Column(Float, nullable=False)
     user = relationship("UserDB", back_populates="files")
 
 
