@@ -99,9 +99,6 @@ def data_for_drawing_maps(userId: int, mapFiles: MapIn, db: Session = Depends(ge
 
     for c_limit in range(len(mapFiles.c_limits)):
         mapFiles.c_limits[c_limit] = checking_ranges(mapFiles.c_limits[c_limit])
-        for number in mapFiles.c_limits[c_limit]:
-            if number > 1 or number < -1:
-                raise HTTPException(status_code=400, detail="Invalid value for the color range")
 
     if len(mapFiles.c_limits) == 1:
         for key in list(C_LIMITS.keys()):
