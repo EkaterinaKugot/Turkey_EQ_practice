@@ -160,12 +160,12 @@ def test_draw_map():
 
     response = client.post("/map/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
     assert response.status_code == 400
-    assert response.json() == {"detail": "The number of elements is not equal to two"}
+    assert response.json() == {"detail": "The number of elements in the color scale is not equal to two"}
 
     data["lat"].append(25)
     response = client.post("/map/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
     assert response.status_code == 400
-    assert response.json() == {"detail": "the value is not a diagnosis"}
+    assert response.json() == {"detail": "The value is not a diagnosis"}
 
     data["lat"][1] = 50
     assert client.post("/map/?emailIn=test_user%40example.com&passwordIn=qwer", json=data).status_code == 200
@@ -173,17 +173,17 @@ def test_draw_map():
     data["files"].append("file.h5")
     response = client.post("/map/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
     assert response.status_code == 400
-    assert response.json() == {"detail": "The file you selected is missing"}
+    assert response.json() == {"detail": "This file has not been uploaded"}
 
     data["files"][1] = "dtec_2_10_10_24.h5"
     response = client.post("/map/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
     assert response.status_code == 400
-    assert response.json() == {"detail": "Selected files of the same type"}
+    assert response.json() == {"detail": "These files are of the same type"}
 
     data["files"][1] = "tnpgn_dtec_2_10_10_24.h5"
     response = client.post("/map/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
     assert response.status_code == 400
-    assert response.json() == {"detail": "The selected files must have the same data about the Epicenter"}
+    assert response.json() == {"detail": "These files must contain different data about the epicenter"}
 
     data["files"][1] = "tnpgn_dtec_10_20_10_24.h5"
     data["files"].append("roti_10_24.h5")

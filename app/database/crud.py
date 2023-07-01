@@ -13,8 +13,6 @@ class User_dir():
 
 user_dir = User_dir()
 
-logger.add("./app/logs/error.log", level="ERROR", retention="1 week")
-
 # CRUD
 def create_user_db(db: Session, user: UserIn):
     fake_hashed_password = user.password + "notreallyhashed"
@@ -47,16 +45,16 @@ def update_user_email_db(db: Session, email: str, new_email: str):
 
 def delete_user_db(db: Session, user: UserIn):
     db_user = get_user_by_email(db, user.email)
-    try:
-        user_data = db.query(FileDB).filter(FileDB.user_id == db_user.id).all()
-    except:
-        return logger.error("Error getting data about user files by id")
-    for data in user_data:
-        db.delete(data)
+    user_data = db.query(FileDB).filter(FileDB.user_id == db_user.id).all()
+    if not user_data:
+        logger.info(f"{db_user.id} This user has no uploaded files")
+    else:
+        for data in user_data:
+            db.delete(data)
     shutil.rmtree(user_dir.user_dir + str(db_user.id))
     db.delete(db_user)
     db.commit()
-    logger.info(f"{db_user.id} The user and his files have been successfully deleted")
+    logger.info(f"{db_user.id} The user and his data have been successfully deleted")
     return None
 
 
@@ -84,21 +82,20 @@ def upload_file_db(db: Session, file: FileOut):
 
 def get_by_date_db(db: Session, user: UserIn, date: date):
     db_user = get_user_by_email(db, user.email)
-    try:
-        data = (
-            db.query(FileDB)
-            .filter(
-                and_(
-                    FileDB.user_id == db_user.id,
-                    or_(
-                        func.DATE(FileDB.start_date) == date,
-                        func.DATE(FileDB.end_date) == date,
-                    ),
-                )
+    data = (
+        db.query(FileDB)
+        .filter(
+            and_(
+                FileDB.user_id == db_user.id,
+                or_(
+                    func.DATE(FileDB.start_date) == date,
+                    func.DATE(FileDB.end_date) == date,
+                ),
             )
-            .all()
         )
-    except:
+        .all()
+    )
+    if not data:
         return logger.error(f"{db_user.id} Error getting file data by date")
     logger.info(f"{db_user.id} File data by date successfully received")
     return data
@@ -106,24 +103,22 @@ def get_by_date_db(db: Session, user: UserIn, date: date):
 
 def get_last_files_db(db: Session, user: UserIn):
     db_user = get_user_by_email(db, user.email)
-    try:
-        last_date = (
-            db.query(FileDB)
-            .filter(FileDB.user_id == db_user.id)
-            .order_by(FileDB.id.desc())
-            .first()
-            .upload_date
-        )
-    except:
-        return logger.error(f"{db_user.id} Error getting the last upload date")
-    try:
+    last_date = (
+        db.query(FileDB)
+        .filter(FileDB.user_id == db_user.id)
+        .order_by(FileDB.id.desc())
+        .first()
+        .upload_date
+    )
+    if not last_date:
+        logger.error(f"{db_user.id} This user has no uploaded files")
+        return {"message": "This user has no uploaded files"}
+    else:
         data = (
             db.query(FileDB)
             .filter(and_(FileDB.user_id == db_user.id, FileDB.upload_date == last_date))
             .all()
         )
-    except:
-        return logger.error(f"{db_user.id} Error getting the latest uploaded files")
     logger.info(f"{db_user.id} File data on the last upload date was successfully received")
     return data
 
@@ -131,6 +126,8 @@ def get_last_files_db(db: Session, user: UserIn):
 def delete_file_db(db: Session, user: UserIn, date: date):
     db_user = get_user_by_email(db, user.email)
     user_data = get_by_date_db(db, user, date)
+    if not user_data:
+        return {"message": "Error getting file data by date"}
     for data in user_data:
         os.remove(data.path)
         db.delete(data)
@@ -140,29 +137,27 @@ def delete_file_db(db: Session, user: UserIn, date: date):
 
 def delete_file_by_path(db: Session, user: UserIn, path: str):
     db_user = get_user_by_email(db, email=user.email)
-    try:
-        user_data = (
-            db.query(FileDB)
-            .filter(
-                and_(
-                    FileDB.user_id == db_user.id,
-                    FileDB.path == path
-                )
+    user_data = (
+        db.query(FileDB)
+        .filter(
+            and_(
+                FileDB.user_id == db_user.id,
+                FileDB.path == path
             )
-            .first()
         )
-    except:
-        return logger.error(f"{db_user.id} Error deleting duplicate file data from the database")
-    if not(user_data is None):
+        .first()
+    )
+    if not user_data:
+        return logger.info(f"{db_user.id} There is no duplicate file data in the database")
+    else:
         db.delete(user_data)
         db.commit()
         logger.info(f"{db_user.id} Duplicate file data has been successfully deleted")
     return None
 
 def get_data_about_file(db: Session, file: str, userId: int):
-    try:
-        db_file = db.query(FileDB).filter(and_(FileDB.user_id == userId,
-                                               FileDB.path == f'{user_dir.user_dir}{userId}/{file}')).first()
-    except:
-        return logger.error("Error the file was not uploaded")
+    db_file = db.query(FileDB).filter(and_(FileDB.user_id == userId,
+                                            FileDB.path == f'{user_dir.user_dir}{userId}/{file}')).first()
+    if not db_file:
+        logger.error(f"{userId} This file has not been uploaded")
     return db_file
