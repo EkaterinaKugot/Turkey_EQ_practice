@@ -9,6 +9,7 @@ import shutil
 import zipfile
 
 from turkey_eq.turkey import *
+#from .turkey import *
 
 from .database.crud import *
 from .database.schemas import *
@@ -17,7 +18,7 @@ from .database.models import *
 api = FastAPI()
 # uvicorn app.main:api --reload --port 8083
 
-logger.add("./app/logs/info.log", level="INFO", retention="1 week")
+logger.add("./app/logs/info.log", level="INFO", rotation="100 KB", compression="zip")
 
 
 def input_data_error(db_user: UserDB, user: UserIn):
@@ -72,9 +73,10 @@ def data_for_drawing_maps(userId: int, mapFiles: MapIn, db: Session = Depends(ge
     for file in mapFiles.files:
         file = get_data_about_file(db, file, userId)
         if not file:
-            raise HTTPException(status_code=400, detail="The file you selected is missing")
+            raise HTTPException(status_code=400, detail="This file has not been uploaded")
         if file.type in list(C_LIMITS.keys()):
-            raise HTTPException(status_code=400, detail="Selected files of the same type")
+            logger.error(f"{userId} These files are of the same type")
+            raise HTTPException(status_code=400, detail="These files are of the same type")
         else:
             if len(list(FILES.keys())) == 0:
                 EPICENTERS['lat'] = file.epc_lat
@@ -83,22 +85,25 @@ def data_for_drawing_maps(userId: int, mapFiles: MapIn, db: Session = Depends(ge
             else:
                 if EPICENTERS['lat'] != file.epc_lat or EPICENTERS['lon'] != file.epc_lon or \
                         EPICENTERS['time'] != file.epc_date:
+                    logger.error(f"{userId} These files must contain different data about the epicenter")
                     raise HTTPException(status_code=400,
-                                        detail="The selected files must have the same data about the Epicenter")
+                                        detail="These files must contain different data about the epicenter")
             C_LIMITS[file.type] = []
             if file.path not in list(FILES.keys()):
                 FILES[file.path] = file.type
             else:
+                logger.error(f"{userId} The same files were selected")
                 raise HTTPException(status_code=400, detail="The same files were selected")
 
     if len(mapFiles.files) != len(mapFiles.c_limits) and len(mapFiles.c_limits) != 1:
+        logger.error(f"{userId} Incorrect number of elements in the color range")
         raise HTTPException(status_code=400, detail="Incorrect number of elements in the color range")
 
-    mapFiles.lon = checking_ranges(mapFiles.lon)
-    mapFiles.lat = checking_ranges(mapFiles.lat)
+    mapFiles.lon = checking_ranges(mapFiles.lon, userId)
+    mapFiles.lat = checking_ranges(mapFiles.lat, userId)
 
     for c_limit in range(len(mapFiles.c_limits)):
-        mapFiles.c_limits[c_limit] = checking_ranges(mapFiles.c_limits[c_limit])
+        mapFiles.c_limits[c_limit] = checking_ranges(mapFiles.c_limits[c_limit], userId)
 
     if len(mapFiles.c_limits) == 1:
         for key in list(C_LIMITS.keys()):
@@ -111,12 +116,13 @@ def data_for_drawing_maps(userId: int, mapFiles: MapIn, db: Session = Depends(ge
     return C_LIMITS, FILES, EPICENTERS
 
 
-def checking_ranges(rangers):
+def checking_ranges(rangers, userId: int):
     if len(rangers) != 2:
-        raise HTTPException(status_code=400, detail="The number of elements is not equal to two")
+        logger.error(f"{userId} The number of elements in the color scale is not equal to two")
+        raise HTTPException(status_code=400, detail="The number of elements in the color scale is not equal to two")
 
     if rangers[0] == rangers[1]:
-        raise HTTPException(status_code=400, detail="the value is not a diagnosis")
+        raise HTTPException(status_code=400, detail="The value is not a diagnosis")
 
     if rangers[1] < rangers[0]:
         range = rangers[1]
@@ -235,10 +241,11 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
     input_data_error(db_user, user)
 
     if len(mapFiles.date) > 3 or len(mapFiles.date) < 1:
+        logger.error(f"{db_user.id} The number of dates is incorrect")
         raise HTTPException(status_code=400, detail="The number of dates is incorrect")
-
+    
+    
     C_LIMITS, FILES, EPICENTERS = data_for_drawing_maps(db_user.id, mapFiles, db)
-
     plot_maps([FILES],
               FILES,
               EPICENTERS,
