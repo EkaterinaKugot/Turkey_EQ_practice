@@ -162,7 +162,7 @@ def delete_file_by_path(db: Session, user: UserIn, path: str):
 def get_data_about_file(db: Session, file: str, userId: int):
     try:
         db_file = db.query(FileDB).filter(and_(FileDB.user_id == userId,
-                                               FileDB.path == f'./app/users/user{userId}/{file}')).first()
+                                               FileDB.path == f'{user_dir.user_dir}{userId}/{file}')).first()
     except:
         return logger.error("Error the file was not uploaded")
     return db_file
