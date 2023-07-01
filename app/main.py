@@ -8,6 +8,10 @@ import os
 import shutil
 import zipfile
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
 from turkey_eq.turkey import *
 
 from .database.crud import *
@@ -18,6 +22,8 @@ api = FastAPI()
 # uvicorn app.main:api --reload --port 8083
 
 logger.add("./app/logs/info.log", level="INFO", retention="1 week")
+
+image_dir = './app/images/user'
 
 
 def input_data_error(db_user: UserDB, user: UserIn):
@@ -247,7 +253,8 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
               lat_limits=mapFiles.lat,
               lon_limits=mapFiles.lon,
               nrows=1,
-              ncols=len(mapFiles.date))
+              ncols=len(mapFiles.date),
+              savefig=f'{image_dir}{db_user.id}')
 
     return None
 
