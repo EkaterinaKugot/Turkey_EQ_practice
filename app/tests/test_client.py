@@ -1,3 +1,7 @@
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
 from fastapi import FastAPI, Depends
 from fastapi.testclient import TestClient
 
