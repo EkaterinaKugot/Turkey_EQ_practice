@@ -96,3 +96,13 @@
 2023-07-01 19:11:51.133 | INFO     | app.database.crud:delete_user_db:59 - 2 The user and his data have been successfully deleted
 2023-07-01 19:11:51.143 | INFO     | app.main:input_data_error:26 - This email does not exist
 2023-07-01 19:51:55.114 | INFO     | app.database.crud:update_user_email_db:44 - 1 The user has successfully updated the email
+2023-07-01 22:18:45.732 | INFO     | app.main:draw_map:269 - 2 The maps have been successfully generated
+2023-07-01 22:19:12.815 | ERROR    | app.main:checking_ranges:127 - 2 The number of elements in the color scale is not equal to two
+2023-07-01 22:19:49.874 | INFO     | app.main:draw_map:269 - 2 The maps have been successfully generated
+2023-07-01 22:20:35.824 | ERROR    | app.main:data_for_drawing_maps:84 - 2 These files are of the same type
+2023-07-01 22:21:07.455 | ERROR    | app.main:data_for_drawing_maps:84 - 2 These files are of the same type
+2023-07-01 22:21:31.837 | ERROR    | app.main:data_for_drawing_maps:84 - 2 These files are of the same type
+2023-07-01 22:21:41.042 | INFO     | app.main:draw_map:269 - 2 The maps have been successfully generated
+2023-07-01 22:22:19.518 | ERROR    | app.main:data_for_drawing_maps:105 - 2 Incorrect number of elements in the color range
+2023-07-01 22:22:40.343 | INFO     | app.main:draw_map:269 - 2 The maps have been successfully generated
+2023-07-01 22:23:12.513 | INFO     | app.main:draw_map:269 - 2 The maps have been successfully generated

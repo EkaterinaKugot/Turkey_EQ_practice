@@ -164,6 +164,8 @@ def update_user_email(new_email: EmailStr, user: UserIn, db: Session = Depends(g
 def delete_user(user: UserIn, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, user.email)
     input_data_error(db_user, user)
+    shutil.rmtree(f"{image_dir}{db_user.id}")
+    logger.info(f"{db_user.id} Maps successfully deleted")
     return delete_user_db(db, user)
 
 
@@ -264,7 +266,9 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
               lon_limits=mapFiles.lon,
               nrows=1,
               ncols=len(mapFiles.date),
-              savefig=f"{image_dir}{db_user.id}/")
+              savefig=f"{image_dir}{db_user.id}/map")
+    
+    logger.info(f"{db_user.id} The maps have been successfully generated")
 
     return None
 

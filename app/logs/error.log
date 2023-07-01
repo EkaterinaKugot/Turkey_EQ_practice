@@ -11,3 +11,8 @@
 2023-07-01 19:11:50.460 | ERROR    | app.main:data_for_drawing_maps:88 - 1 These files must contain different data about the epicenter
 2023-07-01 19:11:50.471 | ERROR    | app.main:data_for_drawing_maps:99 - 1 Incorrect number of elements in the color range
 2023-07-01 19:11:51.061 | ERROR    | app.main:draw_map:244 - 1 The number of dates is incorrect
+2023-07-01 22:19:12.815 | ERROR    | app.main:checking_ranges:127 - 2 The number of elements in the color scale is not equal to two
+2023-07-01 22:20:35.824 | ERROR    | app.main:data_for_drawing_maps:84 - 2 These files are of the same type
+2023-07-01 22:21:07.455 | ERROR    | app.main:data_for_drawing_maps:84 - 2 These files are of the same type
+2023-07-01 22:21:31.837 | ERROR    | app.main:data_for_drawing_maps:84 - 2 These files are of the same type
+2023-07-01 22:22:19.518 | ERROR    | app.main:data_for_drawing_maps:105 - 2 Incorrect number of elements in the color range
