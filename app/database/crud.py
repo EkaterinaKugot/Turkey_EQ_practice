@@ -13,8 +13,6 @@ class User_dir():
 
 user_dir = User_dir()
 
-logger.add("./app/logs/error.log", level="ERROR", rotation="100 KB", compression="zip")
-
 # CRUD
 def create_user_db(db: Session, user: UserIn):
     fake_hashed_password = user.password + "notreallyhashed"

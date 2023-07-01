@@ -8,8 +8,11 @@ import os
 import shutil
 import zipfile
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
 from turkey_eq.turkey import *
-#from .turkey import *
 
 from .database.crud import *
 from .database.schemas import *
@@ -19,6 +22,9 @@ api = FastAPI()
 # uvicorn app.main:api --reload --port 8083
 
 logger.add("./app/logs/info.log", level="INFO", rotation="100 KB", compression="zip")
+logger.add("./app/logs/error.log", level="ERROR", rotation="100 KB", compression="zip")
+
+image_dir = './app/images/user'
 
 
 def input_data_error(db_user: UserDB, user: UserIn):
@@ -244,8 +250,11 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
         logger.error(f"{db_user.id} The number of dates is incorrect")
         raise HTTPException(status_code=400, detail="The number of dates is incorrect")
     
-    
     C_LIMITS, FILES, EPICENTERS = data_for_drawing_maps(db_user.id, mapFiles, db)
+
+    if not os.path.exists(f"{image_dir}{db_user.id}"):
+        os.makedirs(f"{image_dir}{db_user.id}")
+
     plot_maps([FILES],
               FILES,
               EPICENTERS,
@@ -254,7 +263,8 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
               lat_limits=mapFiles.lat,
               lon_limits=mapFiles.lon,
               nrows=1,
-              ncols=len(mapFiles.date))
+              ncols=len(mapFiles.date),
+              savefig=f"{image_dir}{db_user.id}")
 
     return None
 

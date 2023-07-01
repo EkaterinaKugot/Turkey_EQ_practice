@@ -95,3 +95,4 @@
 2023-07-01 19:11:51.117 | INFO     | app.database.crud:delete_user_db:59 - 1 The user and his data have been successfully deleted
 2023-07-01 19:11:51.133 | INFO     | app.database.crud:delete_user_db:59 - 2 The user and his data have been successfully deleted
 2023-07-01 19:11:51.143 | INFO     | app.main:input_data_error:26 - This email does not exist
+2023-07-01 19:51:55.114 | INFO     | app.database.crud:update_user_email_db:44 - 1 The user has successfully updated the email
