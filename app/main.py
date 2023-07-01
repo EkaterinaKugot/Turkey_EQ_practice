@@ -264,7 +264,7 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
               lon_limits=mapFiles.lon,
               nrows=1,
               ncols=len(mapFiles.date),
-              savefig=f"{image_dir}{db_user.id}")
+              savefig=f"{image_dir}{db_user.id}/")
 
     return None
 
