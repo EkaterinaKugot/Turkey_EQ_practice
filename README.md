@@ -90,7 +90,7 @@
 
 Возвращает None и показывает карту пользователю.
 
-Это весь основной функционал данного микросервиса.  
+Это весь основной функционал данного микросервиса.:sunglasses:
 
 ## Инструкция по устанвоке
 Для начала необходимо активировать своё виртуальное окружение (на примере Anaconda).
@@ -105,7 +105,7 @@ conda activate turkey_eq
 conda install -c conda-forge cartopy
 ```
 
-Клонируем репозиторий и перейдем в папку с микросервисом.:sunglasses:
+Клонируем репозиторий и перейдем в папку с микросервисом.
 ```bash
 git clone https://github.com/EkaterinaKugot/Turkey_EQ_practice.git
 cd */Turkey_EQ_practice
@@ -133,6 +133,7 @@ python app/main.py
 
 ## Контактная информация
 :wink:EkaterinaKugot - lika.kugot@gmail.com 
+
 :relaxed:Yulya-S - yulya_shabsnova_03@mail.ru
 
 ## Лицензия
