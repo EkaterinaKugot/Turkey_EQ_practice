@@ -1,6 +1,8 @@
 from pydantic import EmailStr
-from fastapi import FastAPI, Depends, HTTPException, UploadFile
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, Response
+from fastapi.responses import FileResponse, StreamingResponse
 from loguru import logger
+import io
 import uvicorn
 from datetime import datetime, date
 from sqlalchemy.orm import Session
@@ -24,6 +26,7 @@ api = FastAPI()
 logger.add("./app/logs/info.log", level="INFO", rotation="100 KB", compression="zip")
 logger.add("./app/logs/error.log", level="ERROR", rotation="100 KB", compression="zip")
 
+img_dir = "./app/images"
 image_dir = './app/images/user'
 
 
@@ -137,6 +140,20 @@ def checking_ranges(rangers, userId: int):
 
     return rangers
 
+def zipfiles(path):
+    file_list = os.listdir(path)
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, 'w') as zip_file:
+        for file in file_list:
+            file_path = os.path.join(path, file)
+            zip_file.write(file_path, file)
+
+    buffer.seek(0)
+
+    response = StreamingResponse(buffer, media_type="application/zip")
+    response.headers["Content-Disposition"] = "attachment; filename=archive.zip"
+    return response
+
 
 # Endpoints
 @api.post("/users/", response_model=UserOut)
@@ -164,8 +181,9 @@ def update_user_email(new_email: EmailStr, user: UserIn, db: Session = Depends(g
 def delete_user(user: UserIn, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, user.email)
     input_data_error(db_user, user)
-    shutil.rmtree(f"{image_dir}{db_user.id}")
-    logger.info(f"{db_user.id} Maps successfully deleted")
+    if os.path.exists(f"{image_dir}{db_user.id}"):
+        shutil.rmtree(f"{image_dir}{db_user.id}")
+        logger.info(f"{db_user.id} Maps successfully deleted")
     return delete_user_db(db, user)
 
 
@@ -253,9 +271,15 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
         raise HTTPException(status_code=400, detail="The number of dates is incorrect")
     
     C_LIMITS, FILES, EPICENTERS = data_for_drawing_maps(db_user.id, mapFiles, db)
+    path = f"{image_dir}{db_user.id}"
 
     if not os.path.exists(f"{image_dir}{db_user.id}"):
-        os.makedirs(f"{image_dir}{db_user.id}")
+        os.makedirs(path)
+    else:
+        for filename in os.listdir(path):
+            file_path = os.path.join(path, filename)
+            os.remove(file_path)
+
 
     plot_maps([FILES],
               FILES,
@@ -266,11 +290,12 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
               lon_limits=mapFiles.lon,
               nrows=1,
               ncols=len(mapFiles.date),
-              savefig=f"{image_dir}{db_user.id}/map")
+              savefig=f"{path}/map")
     
     logger.info(f"{db_user.id} The maps have been successfully generated")
 
-    return None
+    return zipfiles(path)
+
 
 
 def main():
