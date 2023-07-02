@@ -1,6 +1,8 @@
 from pydantic import EmailStr
-from fastapi import FastAPI, Depends, HTTPException, UploadFile
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, Response
+from fastapi.responses import FileResponse, StreamingResponse
 from loguru import logger
+import io
 import uvicorn
 from datetime import datetime, date
 from sqlalchemy.orm import Session
@@ -21,7 +23,11 @@ from .database.models import *
 api = FastAPI()
 # uvicorn app.main:api --reload --port 8083
 
-logger.add("./app/logs/info.log", level="INFO", retention="1 week")
+logger.add("./app/logs/info.log", level="INFO", rotation="100 KB", compression="zip")
+logger.add("./app/logs/error.log", level="ERROR", rotation="100 KB", compression="zip")
+
+img_dir = "./app/images"
+image_dir = './app/images/user'
 
 image_dir = './app/images/user'
 
@@ -78,9 +84,10 @@ def data_for_drawing_maps(userId: int, mapFiles: MapIn, db: Session = Depends(ge
     for file in mapFiles.files:
         file = get_data_about_file(db, file, userId)
         if not file:
-            raise HTTPException(status_code=400, detail="The file you selected is missing")
+            raise HTTPException(status_code=400, detail="This file has not been uploaded")
         if file.type in list(C_LIMITS.keys()):
-            raise HTTPException(status_code=400, detail="Selected files of the same type")
+            logger.error(f"{userId} These files are of the same type")
+            raise HTTPException(status_code=400, detail="These files are of the same type")
         else:
             if len(list(FILES.keys())) == 0:
                 EPICENTERS['lat'] = file.epc_lat
@@ -89,22 +96,25 @@ def data_for_drawing_maps(userId: int, mapFiles: MapIn, db: Session = Depends(ge
             else:
                 if EPICENTERS['lat'] != file.epc_lat or EPICENTERS['lon'] != file.epc_lon or \
                         EPICENTERS['time'] != file.epc_date:
+                    logger.error(f"{userId} These files must contain different data about the epicenter")
                     raise HTTPException(status_code=400,
-                                        detail="The selected files must have the same data about the Epicenter")
+                                        detail="These files must contain different data about the epicenter")
             C_LIMITS[file.type] = []
             if file.path not in list(FILES.keys()):
                 FILES[file.path] = file.type
             else:
+                logger.error(f"{userId} The same files were selected")
                 raise HTTPException(status_code=400, detail="The same files were selected")
 
     if len(mapFiles.files) != len(mapFiles.c_limits) and len(mapFiles.c_limits) != 1:
+        logger.error(f"{userId} Incorrect number of elements in the color range")
         raise HTTPException(status_code=400, detail="Incorrect number of elements in the color range")
 
-    mapFiles.lon = checking_ranges(mapFiles.lon)
-    mapFiles.lat = checking_ranges(mapFiles.lat)
+    mapFiles.lon = checking_ranges(mapFiles.lon, userId)
+    mapFiles.lat = checking_ranges(mapFiles.lat, userId)
 
     for c_limit in range(len(mapFiles.c_limits)):
-        mapFiles.c_limits[c_limit] = checking_ranges(mapFiles.c_limits[c_limit])
+        mapFiles.c_limits[c_limit] = checking_ranges(mapFiles.c_limits[c_limit], userId)
 
     if len(mapFiles.c_limits) == 1:
         for key in list(C_LIMITS.keys()):
@@ -117,12 +127,13 @@ def data_for_drawing_maps(userId: int, mapFiles: MapIn, db: Session = Depends(ge
     return C_LIMITS, FILES, EPICENTERS
 
 
-def checking_ranges(rangers):
+def checking_ranges(rangers, userId: int):
     if len(rangers) != 2:
-        raise HTTPException(status_code=400, detail="The number of elements is not equal to two")
+        logger.error(f"{userId} The number of elements in the color scale is not equal to two")
+        raise HTTPException(status_code=400, detail="The number of elements in the color scale is not equal to two")
 
     if rangers[0] == rangers[1]:
-        raise HTTPException(status_code=400, detail="the value is not a diagnosis")
+        raise HTTPException(status_code=400, detail="The value is not a diagnosis")
 
     if rangers[1] < rangers[0]:
         range = rangers[1]
@@ -130,6 +141,20 @@ def checking_ranges(rangers):
         rangers[0] = range
 
     return rangers
+
+def zipfiles(path):
+    file_list = os.listdir(path)
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, 'w') as zip_file:
+        for file in file_list:
+            file_path = os.path.join(path, file)
+            zip_file.write(file_path, file)
+
+    buffer.seek(0)
+
+    response = StreamingResponse(buffer, media_type="application/zip")
+    response.headers["Content-Disposition"] = "attachment; filename=archive.zip"
+    return response
 
 
 # Endpoints
@@ -158,6 +183,9 @@ def update_user_email(new_email: EmailStr, user: UserIn, db: Session = Depends(g
 def delete_user(user: UserIn, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, user.email)
     input_data_error(db_user, user)
+    if os.path.exists(f"{image_dir}{db_user.id}"):
+        shutil.rmtree(f"{image_dir}{db_user.id}")
+        logger.info(f"{db_user.id} Maps successfully deleted")
     return delete_user_db(db, user)
 
 
@@ -241,9 +269,19 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
     input_data_error(db_user, user)
 
     if len(mapFiles.date) > 3 or len(mapFiles.date) < 1:
+        logger.error(f"{db_user.id} The number of dates is incorrect")
         raise HTTPException(status_code=400, detail="The number of dates is incorrect")
-
+    
     C_LIMITS, FILES, EPICENTERS = data_for_drawing_maps(db_user.id, mapFiles, db)
+    path = f"{image_dir}{db_user.id}"
+
+    if not os.path.exists(f"{image_dir}{db_user.id}"):
+        os.makedirs(path)
+    else:
+        for filename in os.listdir(path):
+            file_path = os.path.join(path, filename)
+            os.remove(file_path)
+
 
     plot_maps([FILES],
               FILES,
@@ -254,9 +292,12 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
               lon_limits=mapFiles.lon,
               nrows=1,
               ncols=len(mapFiles.date),
-              savefig=f'{image_dir}{db_user.id}')
+              savefig=f"{path}/map")
+    
+    logger.info(f"{db_user.id} The maps have been successfully generated")
 
-    return None
+    return zipfiles(path)
+
 
 
 def main():
