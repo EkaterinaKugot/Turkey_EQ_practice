@@ -28,6 +28,7 @@ logger.add("./app/logs/error.log", level="ERROR", rotation="100 KB", compression
 
 class Image_dir():
     image_dir = './app/images/user'
+    img_dir = "./app/images"
 
 image_dir = Image_dir()
 
@@ -83,6 +84,7 @@ def data_for_drawing_maps(userId: int, mapFiles: MapIn, db: Session = Depends(ge
     for file in mapFiles.files:
         file = get_data_about_file(db, file, userId)
         if not file:
+            logger.error(f"{userId} This file has not been uploaded")
             raise HTTPException(status_code=400, detail="This file has not been uploaded")
         if file.type in list(C_LIMITS.keys()):
             logger.error(f"{userId} These files are of the same type")
@@ -125,7 +127,6 @@ def data_for_drawing_maps(userId: int, mapFiles: MapIn, db: Session = Depends(ge
 
     return C_LIMITS, FILES, EPICENTERS
 
-
 def checking_ranges(rangers, userId: int):
     if len(rangers) != 2:
         logger.error(f"{userId} The number of elements in the color scale is not equal to two")
@@ -154,6 +155,42 @@ def zipfiles(path):
     response = StreamingResponse(buffer, media_type="application/zip")
     response.headers["Content-Disposition"] = "attachment; filename=archive.zip"
     return response
+
+def data_for_distance_time(userId: int, distanceTime: DistanceTime, db: Session = Depends(get_db)):
+    file = get_data_about_file(db, distanceTime.file, userId)
+    if not file:
+        logger.error(f"{userId} This file has not been uploaded")
+        raise HTTPException(status_code=400, detail="This file has not been uploaded")
+    else:
+        FILE = {file.path: file.type}
+
+    if not (distanceTime.direction in ["all", "north", "south", "east", "west"]):
+        logger.error(f"{userId} This direction does not exist")
+        raise HTTPException(status_code=400, detail="This direction does not exist")
+    
+    if len(distanceTime.c_limits) != 2:
+        logger.error(f"{userId} Incorrect number of elements in the color range")
+        raise HTTPException(status_code=400, detail="Incorrect number of elements in the color range")
+    else:
+        if distanceTime.c_limits[0] > distanceTime.c_limits[1]:
+            t = distanceTime.c_limits[1]
+            distanceTime.c_limits[1] = distanceTime.c_limits[0]
+            distanceTime.c_limits[0] = t
+        C_LIMITS = {file.type: [distanceTime.c_limits[0], distanceTime.c_limits[1], "TECu"]}
+
+    EPICENTER = {'lat': file.epc_lat, 'lon': file.epc_lon, 'time': file.epc_date}
+
+    return C_LIMITS, FILE, EPICENTER
+
+def create_images_dir(path: str):
+    if not os.path.exists(image_dir.img_dir):
+        os.makedirs(image_dir.img_dir)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    else:
+        for filename in os.listdir(path):
+            file_path = os.path.join(path, filename)
+            os.remove(file_path)
 
 
 # Endpoints
@@ -260,7 +297,6 @@ def delete_file(user: UserIn, date: date, db: Session = Depends(get_db)):
     input_data_error(db_user, user)
     return delete_file_db(db, user, date)
 
-
 @api.post("/map/")
 def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = Depends(get_db)):
     user = UserIn(email=emailIn, password=passwordIn)
@@ -274,13 +310,7 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
     C_LIMITS, FILES, EPICENTERS = data_for_drawing_maps(db_user.id, mapFiles, db)
     path = f"{image_dir.image_dir}{db_user.id}"
 
-    if not os.path.exists(f"{image_dir.image_dir}{db_user.id}"):
-        os.makedirs(path)
-    else:
-        for filename in os.listdir(path):
-            file_path = os.path.join(path, filename)
-            os.remove(file_path)
-
+    create_images_dir(path)
 
     plot_maps([FILES],
               FILES,
@@ -296,6 +326,69 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
     logger.info(f"{db_user.id} The maps have been successfully generated")
 
     return zipfiles(path)
+
+
+@api.post("/distance-time/")
+def draw_distance_time(emailIn: EmailStr, passwordIn: str, distanceTime: DistanceTime, db: Session = Depends(get_db)):
+    user = UserIn(email=emailIn, password=passwordIn)
+    db_user = get_user_by_email(db, user.email)
+    input_data_error(db_user, user)
+
+    if len(distanceTime.velocity) != len(distanceTime.start) or \
+        len(distanceTime.start) != len(distanceTime.style):
+        logger.error(f"{db_user.id} You need the same number of elements in velocity, start and style")
+        raise HTTPException(status_code=400, detail="You need the same number of elements in velocity, start and style")
+    elif len(distanceTime.style) != 0:
+        for i in distanceTime.style:
+            if not(i in ["solid", "dashed", "dashdot", "dotted"]):
+                logger.error(f"{db_user.id} There is no such line style")
+                raise HTTPException(status_code=400, detail="There is no such line style")
+
+    C_LIMITS, FILE, EPICENTER = data_for_distance_time(db_user.id, distanceTime, db)
+
+    data = []
+    type1 = ""
+    for i, j in FILE.items():
+        data = retrieve_data(i, j)
+        type1 = j
+    x, y, c = get_dist_time(data, EPICENTER, distanceTime.direction)
+    plot_distance_time(x, y, c, type1, EPICENTER, clims=C_LIMITS, data=data)
+
+    if len(distanceTime.velocity) != 0:
+        for vel, start, style in zip(distanceTime.velocity, distanceTime.start, distanceTime.style):
+            plot_line(vel, start, style)
+
+    path = f"{image_dir.image_dir}{db_user.id}"
+    create_images_dir(path)    
+    plt.savefig(f"{path}/chart.jpg")
+
+    logger.info(f"{db_user.id} Distance-time diagram successfully generated")
+
+    return zipfiles(path)
+
+@api.post("/support-plot/")
+def draw_support_plot(emailIn: EmailStr, passwordIn: str, supportPlot: SupportPlot, db: Session = Depends(get_db)):
+    user = UserIn(email=emailIn, password=passwordIn)
+    db_user = get_user_by_email(db, user.email)
+    input_data_error(db_user, user)
+
+    file = get_data_about_file(db, supportPlot.file, db_user.id)
+    if not file:
+        logger.error(f"{db_user.id} This file has not been uploaded")
+        raise HTTPException(status_code=400, detail="This file has not been uploaded")
+    
+    EPICENTER = {'lat': file.epc_lat, 'lon': file.epc_lon, 'time': file.epc_date}
+
+    plot_sites(file.path, supportPlot.sat, supportPlot.sites[:], file.type, EPICENTER, supportPlot.span)
+
+    path = f"{image_dir.image_dir}{db_user.id}"
+    create_images_dir(path)  
+    plt.savefig(f"{path}/plot.jpg")
+
+    logger.info(f"{db_user.id} Support plot successfully generated")
+
+    return zipfiles(path)
+
 
 
 
