@@ -91,3 +91,49 @@
 Возвращает None и показывает карту пользователю.
 
 Это весь основной функционал данного микросервиса.  
+
+## Инструкция по устанвоке
+Для начала необходимо активировать своё виртуальное окружение (на примере Anaconda).
+```bash
+conda deactivate
+conda create -n turkey_eq python=3.10
+conda activate turkey_eq
+```
+
+Теперь установим cartopy.
+```bash
+conda install -c conda-forge cartopy
+```
+
+Клонируем репозиторий и перейдем в папку с микросервисом.:sunglasses:
+```bash
+git clone https://github.com/EkaterinaKugot/Turkey_EQ_practice.git
+cd */Turkey_EQ_practice
+```
+
+Установим необходимые зависимости.
+```bash
+poetry install
+```
+
+Запустим микросервис.
+```bash
+uvicorn app.main:api --reload --port 8083
+```
+
+или..
+```bash
+python app/main.py
+```
+
+## Contributors
+<a href="https://github.com/EkaterinaKugot/Turkey_EQ_practice/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=EkaterinaKugot/Turkey_EQ_practice" />
+</a>
+
+## Контактная информация
+:wink:EkaterinaKugot - lika.kugot@gmail.com 
+:relaxed:Yulya-S - yulya_shabsnova_03@mail.ru
+
+## Лицензия
+MIT
