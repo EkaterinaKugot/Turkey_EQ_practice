@@ -20,7 +20,6 @@ if not os.path.exists(os.path.join("./app/tests/images")):
 
 
 image_dir.image_dir = './app/tests/images/user'
-image_dir.img_dir = './app/tests/images'
 user_dir.user_dir = "./app/tests/users/user"
 
 
