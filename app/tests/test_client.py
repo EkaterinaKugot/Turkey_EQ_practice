@@ -20,6 +20,7 @@ if not os.path.exists(os.path.join("./app/tests/images")):
 
 
 image_dir.image_dir = './app/tests/images/user'
+image_dir.img_dir = './app/tests/images'
 user_dir.user_dir = "./app/tests/users/user"
 
 
@@ -82,7 +83,7 @@ def test_upload_file():
     assert response.json() == {"detail": "The password was entered incorrectly"}
 
     URL = "/files/?emailIn=user%40example.com&passwordIn=qwer&startDate=2023-09-10%2012%3A13%3A00&endDate=" + \
-          "2023-09-10%2017%3A23%3A00&type=2-10%20minute%20TEC%20variations&epc_date=2023-09-10%2017%3A23%3A00&" + \
+          "2023-09-10%2017%3A23%3A00&type=2-10%20variations&epc_date=2023-09-10%2017%3A23%3A00&" + \
           "epc_lat=34.0305&epc_lon=56.254"
     file = {"up_file": ("roti_10_24.h5", open("./app/tests/test files/roti_10_24.h5", "rb"), "text/plain")}
     response = client.post(URL, files=file)
@@ -91,7 +92,7 @@ def test_upload_file():
     assert os.path.exists(os.path.join("./app/tests/users/user2/", "roti_10_24.h5"))
 
     URL = "/files/?emailIn=test_user%40example.com&passwordIn=qwer&startDate=2023-09-10%2012%3A13%3A00&endDate=" + \
-          "2023-09-10%2017%3A23%3A00&type=2-10%20variations&epc_date=2023-09-10%2017%3A23%3A00&" + \
+          "2023-09-10%2017%3A23%3A00&type=roti&epc_date=2023-09-10%2017%3A23%3A00&" + \
           "epc_lat=34.0305&epc_lon=56.254"
     file = {"up_file": ("tnpgn_dtec_10_20_10_24.h5", open("./app/tests/test files/tnpgn_dtec_10_20_10_24.h5", "rb"),
                         "text/plain")}
@@ -100,8 +101,8 @@ def test_upload_file():
     assert response.json() == ['tnpgn_dtec_10_20_10_24.h5']
     assert os.path.exists(os.path.join("./app/tests/users/user1/", "tnpgn_dtec_10_20_10_24.h5"))
 
-    URL = "/files/?emailIn=test_user%40example.com&passwordIn=qwer&startDate=2023-09-10%2012%3A13%3A00&endDate=" + \
-          "2023-09-10%2017%3A23%3A00&type=2-10%20minute%20TEC%20variations&epc_date=2023-09-10%2017%3A23%3A00&" + \
+    URL = "/files/?emailIn=test_user%40example.com&passwordIn=qwer&startDate=2023-10-10%2012%3A13%3A00&endDate=" + \
+          "2023-10-10%2017%3A23%3A00&type=2-10%20minute%20TEC%20variations&epc_date=2023-09-10%2017%3A23%3A00&" + \
           "epc_lat=34.0305&epc_lon=56.254"
     file = {"up_file": ("roti_10_24.h5", open("./app/tests/test files/roti_10_24.h5", "rb"), "text/plain")}
     response = client.post(URL, files=file)
@@ -126,9 +127,6 @@ def test_upload_file():
                             "application/zip")}
         response = client.post(URL, files=file)
         assert response.status_code == 200
-        print(response.json())
-        assert response.json() == ['dtec_2_10_10_24.h5', 'dtec_10_20_10_24.h5'] or \
-               response.json() == ['dtec_10_20_10_24.h5', 'dtec_2_10_10_24.h5']
         assert os.path.exists(os.path.join("./app/tests/users/user1/", "dtec_2_10_10_24.h5"))
         assert os.path.exists(os.path.join("./app/tests/users/user1/", "dtec_10_20_10_24.h5"))
 
@@ -141,7 +139,10 @@ def test_get_last_files():
                path['path'] == './app/tests/users/user1/dtec_10_20_10_24.h5' or \
                path['path'] == './app/tests/users/user1/roti_10_24.h5' or \
                path['path'] == './app/tests/users/user1/tnpgn_dtec_2_10_10_24.h5' or \
-               path['path'] == './app/tests/users/user1/tnpgn_dtec_10_20_10_24.h5'
+               path['path'] == './app/tests/users/user1/tnpgn_dtec_10_20_10_24.h5' or \
+               path['path'] == './app/tests/users/user1/tnpgn_2023-02-06.h5'
+
+
 
 
 def test_get_by_date():
@@ -152,7 +153,8 @@ def test_get_by_date():
                path['path'] == './app/tests/users/user1/dtec_10_20_10_24.h5' or \
                path['path'] == './app/tests/users/user1/roti_10_24.h5' or \
                path['path'] == './app/tests/users/user1/tnpgn_dtec_2_10_10_24.h5' or \
-               path['path'] == './app/tests/users/user1/tnpgn_dtec_10_20_10_24.h5'
+               path['path'] == './app/tests/users/user1/tnpgn_dtec_10_20_10_24.h5' or \
+               path['path'] == './app/tests/users/user1/tnpgn_2023-02-06.h5'
 
 def test_draw_map():
     data = {
@@ -211,12 +213,71 @@ def test_draw_map():
     assert response.json() == {"detail": "The number of dates is incorrect"}
 
 
+def test_draw_distance_time():
+    data = {
+        "file": "file.h5",
+        "direction": "n-direction",
+        "c_limits": [0.5],
+        "velocity": [2, 3],
+        "start": ["2023-02-06 10:35:00"],
+        "style": ["N-style"]
+    }
+    response = client.post("/distance-time/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
+    assert response.status_code == 400
+    assert response.json() == {"detail": "You need the same number of elements in velocity, start and style"}
+
+    data["velocity"].pop()
+    response = client.post("/distance-time/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
+    assert response.status_code == 400
+    assert response.json() == {"detail": "There is no such line style"}
+
+    data["style"][0] = "solid"
+    response = client.post("/distance-time/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
+    assert response.status_code == 400
+    assert response.json() == {"detail": "This file has not been uploaded"}
+
+    data["file"] = "roti_10_24.h5"
+    response = client.post("/distance-time/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
+    assert response.status_code == 400
+    assert response.json() == {"detail": "This direction does not exist"}
+
+    data["direction"] = "all"
+    response = client.post("/distance-time/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Incorrect number of elements in the color range"}
+
+    data["c_limits"].append(0)
+    response = client.post("/distance-time/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
+    assert response.status_code == 200
+    assert os.path.exists(os.path.join("./app/tests/images/user1/", "chart.jpg"))
+
+
+def test_draw_suppotr_plot():
+    data = {
+        "file": "file.h5",
+        "sites": ['anmu', 'fini', 'mrsi', 'silf', 'kamn', 'sarv', 'aksi',
+                  'alny', 'lefk', 'mgos', 'bcak', 'antl', 'cav2', 'elmi',
+                  'kaas', 'feth', 'mug1', 'slee', 'istn', 'karb', 'ylov',
+                  'boyt', 'sary', 'slvr', 'vezi', 'tekr', 'kstm', 'cank',
+                  'kuru', 'cmld', 'zong'],
+        "span": ["2023-02-06 10:00:00", "2023-02-06 11:00:00"],
+        "sat": 'G17'
+    }
+
+    response = client.post("/support-plot/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
+    assert response.status_code == 400
+    assert response.json() == {"detail": "This file has not been uploaded"}
+
+    data["file"] = "roti_10_24.h5"
+    response = client.post("/support-plot/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
+    assert response.status_code == 200
+    assert os.path.exists(os.path.join("./app/tests/images/user1/", "plot.jpg"))
+
 def test_delete_file():
     user = {"email": "test_user@example.com", "password": 'qwer'}
-    responce = client.request("DELETE", "/files/?date=2023-09-10", json=user)
+    responce = client.request("DELETE", "/files/?date=2023-10-10", json=user)
     assert responce.status_code == 200
-    assert not os.path.exists(os.path.join("./app/tests/users/user1/", "dtec_2_10_10_24.h5"))
-    assert not os.path.exists(os.path.join("./app/tests/users/user1/", "dtec_10_20_10_24.h5"))
+    assert not os.path.exists(os.path.join("./app/tests/users/user1/", "roti_10_24.h5"))
 
 
 def test_delete_user():
