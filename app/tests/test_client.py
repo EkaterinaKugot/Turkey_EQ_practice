@@ -15,8 +15,14 @@ import os
 
 if not os.path.exists(os.path.join("./app/tests/users")):
     os.mkdir('./app/tests/users')
+if not os.path.exists(os.path.join("./app/tests/images")):
+    os.mkdir('./app/tests/images')
 
+
+image_dir.image_dir = './app/tests/images/user'
+image_dir.img_dir = './app/tests/images'
 user_dir.user_dir = "./app/tests/users/user"
+
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./app/tests/test_db.db"
 engine = create_engine(
@@ -168,7 +174,9 @@ def test_draw_map():
     assert response.json() == {"detail": "The value is not a diagnosis"}
 
     data["lat"][1] = 50
-    assert client.post("/map/?emailIn=test_user%40example.com&passwordIn=qwer", json=data).status_code == 200
+    response = client.post("/map/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
+    assert response.status_code == 200
+    assert os.path.exists(os.path.join("./app/tests/images/user1/", "map_2.jpg"))
 
     data["files"].append("file.h5")
     response = client.post("/map/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
@@ -195,6 +203,8 @@ def test_draw_map():
     data["files"].pop()
     response = client.post("/map/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)
     assert response.status_code == 200
+    assert os.path.exists(os.path.join("./app/tests/images/user1/", "map_2.jpg"))
+    assert os.path.exists(os.path.join("./app/tests/images/user1/", "map_3.jpg"))
 
     data["date"].append("2023-02-06T10:25:00.000Z")
     response = client.post("/map/?emailIn=test_user%40example.com&passwordIn=qwer", json=data)

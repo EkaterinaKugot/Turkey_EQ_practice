@@ -26,11 +26,11 @@ api = FastAPI()
 logger.add("./app/logs/info.log", level="INFO", rotation="100 KB", compression="zip")
 logger.add("./app/logs/error.log", level="ERROR", rotation="100 KB", compression="zip")
 
-img_dir = "./app/images"
-image_dir = './app/images/user'
+class Image_dir():
+    img_dir = "./app/images"
+    image_dir = './app/images/user'
 
-image_dir = './app/images/user'
-
+image_dir = Image_dir()
 
 def input_data_error(db_user: UserDB, user: UserIn):
     if db_user is None:
@@ -183,8 +183,8 @@ def update_user_email(new_email: EmailStr, user: UserIn, db: Session = Depends(g
 def delete_user(user: UserIn, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, user.email)
     input_data_error(db_user, user)
-    if os.path.exists(f"{image_dir}{db_user.id}"):
-        shutil.rmtree(f"{image_dir}{db_user.id}")
+    if os.path.exists(f"{image_dir.image_dir}{db_user.id}"):
+        shutil.rmtree(f"{image_dir.image_dir}{db_user.id}")
         logger.info(f"{db_user.id} Maps successfully deleted")
     return delete_user_db(db, user)
 
@@ -273,9 +273,9 @@ def draw_map(emailIn: EmailStr, passwordIn: str, mapFiles: MapIn, db: Session = 
         raise HTTPException(status_code=400, detail="The number of dates is incorrect")
     
     C_LIMITS, FILES, EPICENTERS = data_for_drawing_maps(db_user.id, mapFiles, db)
-    path = f"{image_dir}{db_user.id}"
+    path = f"{image_dir.image_dir}{db_user.id}"
 
-    if not os.path.exists(f"{image_dir}{db_user.id}"):
+    if not os.path.exists(f"{image_dir.image_dir}{db_user.id}"):
         os.makedirs(path)
     else:
         for filename in os.listdir(path):
