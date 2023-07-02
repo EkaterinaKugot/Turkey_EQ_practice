@@ -27,7 +27,6 @@ logger.add("./app/logs/info.log", level="INFO", rotation="100 KB", compression="
 logger.add("./app/logs/error.log", level="ERROR", rotation="100 KB", compression="zip")
 
 class Image_dir():
-    img_dir = "./app/images"
     image_dir = './app/images/user'
 
 image_dir = Image_dir()
