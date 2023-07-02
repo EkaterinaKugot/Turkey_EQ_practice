@@ -29,6 +29,8 @@ logger.add("./app/logs/error.log", level="ERROR", rotation="100 KB", compression
 img_dir = "./app/images"
 image_dir = './app/images/user'
 
+image_dir = './app/images/user'
+
 
 def input_data_error(db_user: UserDB, user: UserIn):
     if db_user is None:
