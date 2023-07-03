@@ -1,6 +1,6 @@
 from pydantic import EmailStr
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, Response
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi import FastAPI, Depends, HTTPException, UploadFile
+from fastapi.responses import StreamingResponse
 from loguru import logger
 import io
 import uvicorn
@@ -388,8 +388,6 @@ def draw_support_plot(emailIn: EmailStr, passwordIn: str, supportPlot: SupportPl
     logger.info(f"{db_user.id} Support plot successfully generated")
 
     return zipfiles(path)
-
-
 
 
 def main():
