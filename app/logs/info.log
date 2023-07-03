@@ -1,0 +1,78 @@
+2023-07-03 15:00:29.584 | ERROR    | app.main:draw_distance_time:339 - 1 You need the same number of elements in velocity, start and style
+2023-07-03 15:00:29.594 | ERROR    | app.main:draw_distance_time:344 - 1 There is no such line style
+2023-07-03 15:00:29.603 | ERROR    | app.database.crud:get_data_about_file:162 - 1 This file has not been uploaded
+2023-07-03 15:00:29.604 | ERROR    | app.main:data_for_distance_time:162 - 1 This file has not been uploaded
+2023-07-03 15:00:29.614 | ERROR    | app.main:data_for_distance_time:168 - 1 This direction does not exist
+2023-07-03 15:00:29.625 | ERROR    | app.main:data_for_distance_time:172 - 1 Incorrect number of elements in the color range
+2023-07-03 15:00:43.835 | INFO     | app.main:draw_distance_time:365 - 1 Distance-time diagram successfully generated
+2023-07-03 15:00:44.135 | ERROR    | app.database.crud:get_data_about_file:162 - 1 This file has not been uploaded
+2023-07-03 15:00:44.136 | ERROR    | app.main:draw_support_plot:377 - 1 This file has not been uploaded
+2023-07-03 15:00:44.467 | INFO     | app.main:draw_support_plot:388 - 1 Support plot successfully generated
+2023-07-03 15:00:47.133 | INFO     | app.database.crud:get_by_date_db:100 - 1 File data by date successfully received
+2023-07-03 15:00:47.142 | INFO     | app.database.crud:delete_file_db:135 - 1 Files successfully deleted
+2023-07-03 15:00:47.154 | INFO     | app.main:input_data_error:40 - 1 The password was entered incorrectly
+2023-07-03 15:00:47.164 | INFO     | app.main:delete_user:224 - 1 Maps successfully deleted
+2023-07-03 15:00:47.179 | INFO     | app.database.crud:delete_user_db:57 - 1 The user and his data have been successfully deleted
+2023-07-03 15:00:47.196 | INFO     | app.database.crud:delete_user_db:57 - 2 The user and his data have been successfully deleted
+2023-07-03 15:00:47.204 | INFO     | app.main:input_data_error:37 - This email does not exist
+2023-07-03 15:17:47.857 | INFO     | app.database.crud:create_user_db:26 - 1 The user has been successfully created
+2023-07-03 15:17:47.858 | INFO     | app.main:create_user:207 - 1 The user's directory has been created
+2023-07-03 15:17:47.868 | INFO     | app.main:create_user:201 - Email already registered
+2023-07-03 15:17:47.880 | INFO     | app.main:input_data_error:40 - 1 The password was entered incorrectly
+2023-07-03 15:17:47.899 | INFO     | app.database.crud:update_user_email_db:42 - 1 The user has successfully updated the email
+2023-07-03 15:17:47.910 | INFO     | app.main:input_data_error:37 - This email does not exist
+2023-07-03 15:17:48.047 | INFO     | app.main:upload_file:247 - 1 The password was entered incorrectly
+2023-07-03 15:17:48.205 | INFO     | app.database.crud:create_user_db:26 - 2 The user has been successfully created
+2023-07-03 15:17:48.206 | INFO     | app.main:create_user:207 - 2 The user's directory has been created
+2023-07-03 15:17:48.213 | INFO     | app.main:upload_files_archives:55 - 2 The file has been uploaded successfully
+2023-07-03 15:17:48.217 | INFO     | app.database.crud:delete_file_by_path:151 - 2 There is no duplicate file data in the database
+2023-07-03 15:17:48.227 | INFO     | app.database.crud:upload_file_db:79 - 2 File data has been successfully added to the database
+2023-07-03 15:17:48.347 | INFO     | app.main:upload_files_archives:55 - 1 The file has been uploaded successfully
+2023-07-03 15:17:48.349 | INFO     | app.database.crud:delete_file_by_path:151 - 1 There is no duplicate file data in the database
+2023-07-03 15:17:48.356 | INFO     | app.database.crud:upload_file_db:79 - 1 File data has been successfully added to the database
+2023-07-03 15:17:48.502 | INFO     | app.main:upload_files_archives:55 - 1 The file has been uploaded successfully
+2023-07-03 15:17:48.504 | INFO     | app.database.crud:delete_file_by_path:151 - 1 There is no duplicate file data in the database
+2023-07-03 15:17:48.512 | INFO     | app.database.crud:upload_file_db:79 - 1 File data has been successfully added to the database
+2023-07-03 15:17:48.650 | INFO     | app.main:upload_files_archives:55 - 1 The file has been uploaded successfully
+2023-07-03 15:17:48.652 | INFO     | app.database.crud:delete_file_by_path:151 - 1 There is no duplicate file data in the database
+2023-07-03 15:17:48.659 | INFO     | app.database.crud:upload_file_db:79 - 1 File data has been successfully added to the database
+2023-07-03 15:17:49.005 | INFO     | app.main:upload_files_archives:55 - 1 The file has been uploaded successfully
+2023-07-03 15:17:49.093 | INFO     | app.main:upload_files_archives:73 - 1 The archive has been successfully unzipped
+2023-07-03 15:17:49.095 | INFO     | app.database.crud:delete_file_by_path:151 - 1 There is no duplicate file data in the database
+2023-07-03 15:17:49.097 | INFO     | app.database.crud:delete_file_by_path:151 - 1 There is no duplicate file data in the database
+2023-07-03 15:17:49.104 | INFO     | app.database.crud:upload_file_db:79 - 1 File data has been successfully added to the database
+2023-07-03 15:17:49.113 | INFO     | app.database.crud:upload_file_db:79 - 1 File data has been successfully added to the database
+2023-07-03 15:17:49.436 | INFO     | app.main:upload_files_archives:55 - 1 The file has been uploaded successfully
+2023-07-03 15:17:49.531 | INFO     | app.main:upload_files_archives:73 - 1 The archive has been successfully unzipped
+2023-07-03 15:17:49.541 | INFO     | app.database.crud:delete_file_by_path:155 - 1 Duplicate file data has been successfully deleted
+2023-07-03 15:17:49.551 | INFO     | app.database.crud:delete_file_by_path:155 - 1 Duplicate file data has been successfully deleted
+2023-07-03 15:17:49.559 | INFO     | app.database.crud:upload_file_db:79 - 1 File data has been successfully added to the database
+2023-07-03 15:17:49.566 | INFO     | app.database.crud:upload_file_db:79 - 1 File data has been successfully added to the database
+2023-07-03 15:17:49.586 | INFO     | app.database.crud:get_last_files_db:122 - 1 File data on the last upload date was successfully received
+2023-07-03 15:17:49.601 | INFO     | app.database.crud:get_by_date_db:100 - 1 File data by date successfully received
+2023-07-03 15:17:49.618 | ERROR    | app.main:checking_ranges:132 - 1 The number of elements in the color scale is not equal to two
+2023-07-03 15:17:51.060 | INFO     | app.main:draw_map:326 - 1 The maps have been successfully generated
+2023-07-03 15:17:51.409 | ERROR    | app.database.crud:get_data_about_file:162 - 1 This file has not been uploaded
+2023-07-03 15:17:51.410 | ERROR    | app.main:data_for_drawing_maps:87 - 1 This file has not been uploaded
+2023-07-03 15:17:51.422 | ERROR    | app.main:data_for_drawing_maps:90 - 1 These files are of the same type
+2023-07-03 15:17:51.434 | ERROR    | app.main:data_for_drawing_maps:100 - 1 These files must contain different data about the epicenter
+2023-07-03 15:17:51.447 | ERROR    | app.main:data_for_drawing_maps:111 - 1 Incorrect number of elements in the color range
+2023-07-03 15:17:53.030 | INFO     | app.main:draw_map:326 - 1 The maps have been successfully generated
+2023-07-03 15:17:53.633 | ERROR    | app.main:draw_map:307 - 1 The number of dates is incorrect
+2023-07-03 15:17:53.647 | ERROR    | app.main:draw_distance_time:339 - 1 You need the same number of elements in velocity, start and style
+2023-07-03 15:17:53.659 | ERROR    | app.main:draw_distance_time:344 - 1 There is no such line style
+2023-07-03 15:17:53.670 | ERROR    | app.database.crud:get_data_about_file:162 - 1 This file has not been uploaded
+2023-07-03 15:17:53.670 | ERROR    | app.main:data_for_distance_time:162 - 1 This file has not been uploaded
+2023-07-03 15:17:53.681 | ERROR    | app.main:data_for_distance_time:168 - 1 This direction does not exist
+2023-07-03 15:17:53.694 | ERROR    | app.main:data_for_distance_time:172 - 1 Incorrect number of elements in the color range
+2023-07-03 15:18:08.477 | INFO     | app.main:draw_distance_time:365 - 1 Distance-time diagram successfully generated
+2023-07-03 15:18:08.782 | ERROR    | app.database.crud:get_data_about_file:162 - 1 This file has not been uploaded
+2023-07-03 15:18:08.782 | ERROR    | app.main:draw_support_plot:377 - 1 This file has not been uploaded
+2023-07-03 15:18:09.100 | INFO     | app.main:draw_support_plot:388 - 1 Support plot successfully generated
+2023-07-03 15:18:11.711 | INFO     | app.database.crud:get_by_date_db:100 - 1 File data by date successfully received
+2023-07-03 15:18:11.720 | INFO     | app.database.crud:delete_file_db:135 - 1 Files successfully deleted
+2023-07-03 15:18:11.731 | INFO     | app.main:input_data_error:40 - 1 The password was entered incorrectly
+2023-07-03 15:18:11.741 | INFO     | app.main:delete_user:224 - 1 Maps successfully deleted
+2023-07-03 15:18:11.756 | INFO     | app.database.crud:delete_user_db:57 - 1 The user and his data have been successfully deleted
+2023-07-03 15:18:11.775 | INFO     | app.database.crud:delete_user_db:57 - 2 The user and his data have been successfully deleted
+2023-07-03 15:18:11.784 | INFO     | app.main:input_data_error:37 - This email does not exist
