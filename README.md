@@ -100,9 +100,10 @@ conda create -n turkey_eq python=3.10
 conda activate turkey_eq
 ```
 
-Теперь установим cartopy.
+Теперь установим cartopy и poetry.
 ```bash
 conda install -c conda-forge cartopy
+pip install poetry
 ```
 
 Клонируем репозиторий и перейдем в папку с микросервисом.
