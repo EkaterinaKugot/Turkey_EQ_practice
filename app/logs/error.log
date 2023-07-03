@@ -55,3 +55,6 @@
 2023-07-03 12:08:13.315 | ERROR    | app.main:data_for_distance_time:172 - 1 Incorrect number of elements in the color range
 2023-07-03 12:08:25.339 | ERROR    | app.database.crud:get_data_about_file:162 - 1 This file has not been uploaded
 2023-07-03 12:08:25.340 | ERROR    | app.main:draw_support_plot:377 - 1 This file has not been uploaded
+2023-07-03 13:20:57.262 | ERROR    | app.database.crud:get_by_date_db:99 - 5 Error getting file data by date
+2023-07-03 13:33:08.598 | ERROR    | app.database.crud:get_data_about_file:162 - 5 This file has not been uploaded
+2023-07-03 13:33:08.602 | ERROR    | app.main:data_for_drawing_maps:87 - 5 This file has not been uploaded
