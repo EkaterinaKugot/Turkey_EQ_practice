@@ -390,8 +390,6 @@ def draw_support_plot(emailIn: EmailStr, passwordIn: str, supportPlot: SupportPl
     return zipfiles(path)
 
 
-
-
 def main():
     uvicorn.run(f"{os.path.basename(__file__)[:-3]}:api", log_level="info")
 
