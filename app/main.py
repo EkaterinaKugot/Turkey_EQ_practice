@@ -1,6 +1,6 @@
 from pydantic import EmailStr
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, Response
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi import FastAPI, Depends, HTTPException, UploadFile
+from fastapi.responses import StreamingResponse
 from loguru import logger
 import io
 import uvicorn
