@@ -141,4 +141,3 @@ python app/main.py
 
 ## Лицензия
 MIT
-
