@@ -111,10 +111,12 @@ git clone https://github.com/EkaterinaKugot/Turkey_EQ_practice.git
 cd */Turkey_EQ_practice
 ```
 
-Установим необходимые зависимости.
+Установим необходимые зависимости и библиотеку с расчетами.
 ```bash
 poetry install
+pip install turkey_eq-1.7-py3-none-any.whl
 ```
+Библиотеку можно скачать [по ссылке](https://test.pypi.org/project/turkey-eq/)
 
 Запустим микросервис.
 ```bash
