@@ -248,7 +248,7 @@ def test_draw_distance_time():
     assert os.path.exists(os.path.join("./app/tests/images/user1/", "chart.jpg"))
 
 
-def test_draw_suppotr_plot():
+def test_draw_supporе_plot():
     data = {
         "file": "file.h5",
         "sites": ['anmu', 'fini', 'mrsi', 'silf', 'kamn', 'sarv', 'aksi',
